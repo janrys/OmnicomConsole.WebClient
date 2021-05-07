@@ -10,6 +10,7 @@ import { environment } from '@env/environment';
 import { CoreModule } from '@core';
 import { SharedModule } from '@shared';
 import { MasterModule } from './master/master.module';
+//import { CodebooksModule } from './codebooks/codebooks.module';
 import { ShellModule } from './shell/shell.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -26,6 +27,7 @@ import { AppRoutingModule } from './app-routing.module';
     SharedModule,
     ShellModule,
     MasterModule,
+    //CodebooksModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
   declarations: [AppComponent],

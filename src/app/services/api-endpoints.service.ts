@@ -49,6 +49,9 @@ export class ApiEndpointsService {
   // call regular endpoint without boolean true at end
   public getPersonsEndpoint = (): string => this.createUrl('Persons');
 
+  // codebooks
+  public getCodebooksEndpoint = (): string => this.createUrl('Codebooks');
+
   // Call API technique https://medium.com/better-programming/angular-api-calls-the-right-way-264198bf2c64
 
   // call Mock endpoint
