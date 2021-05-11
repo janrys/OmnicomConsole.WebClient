@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SharedModule } from '@shared';
-import { CodebooksRoutingModule } from './codebooks-routing.module';
-import { CodebooksComponent } from './codebooks.component';
+import { ImportRoutingModule } from './import-routing.module';
 import { DataTablesModule } from 'angular-datatables';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { ImportComponent } from './import.component';
 
 //import { ToastComponent } from '@shared/toast/toast.component';
 //import { ToastsContainer } from './toasts-container.component';
@@ -17,11 +17,11 @@ import { MatTableModule } from '@angular/material/table';
     CommonModule,
     TranslateModule,
     SharedModule,
-    CodebooksRoutingModule,
+    ImportRoutingModule,
     DataTablesModule,
     FormsModule,
     MatTableModule,
   ],
-  declarations: [CodebooksComponent],
+  declarations: [ImportComponent],
 })
-export class CodebooksModule {}
+export class ImportModule {}

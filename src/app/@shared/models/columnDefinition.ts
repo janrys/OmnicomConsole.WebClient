@@ -3,4 +3,6 @@
   isNullable: boolean;
   dataType: string;
   maximumLength: number;
+  isIdentity: boolean;
+  isPrimaryKey: boolean;
 }

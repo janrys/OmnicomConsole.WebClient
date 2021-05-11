@@ -18,6 +18,7 @@ export class CodebooksComponent implements OnInit {
   codeboooks: Codebook[];
   codeboookDetail: CodebookDetail;
   codebookDetailWithData: CodebookDetailWithData;
+  columns: string[];
   lockState: string = 'unlock';
   modela = 1;
   model = {
@@ -60,6 +61,7 @@ export class CodebooksComponent implements OnInit {
       (resp) => {
         this.codebookDetailWithData = resp;
         this.codeboookDetail = resp;
+        this.columns = Object.keys(this.codebookDetailWithData.data[0]);
       },
       (error) => {
         log.debug(error);

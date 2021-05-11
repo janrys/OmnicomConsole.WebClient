@@ -34,32 +34,20 @@
       </div>
     </div>
 
-    <div class="btn-group btn-group-toggle">
-      <label class="btn-primary" ngbButtonLabel>
-        <input type="checkbox" ngbButton [(ngModel)]="model.left" /> Left (pre-checked)
-      </label>
-      <label class="btn-primary" ngbButtonLabel>
-        <input type="checkbox" ngbButton [(ngModel)]="model.middle" /> Middle
-      </label>
-      <label class="btn-primary" ngbButtonLabel>
-        <input type="checkbox" ngbButton [(ngModel)]="model.right" /> Right
-      </label>
-    </div>
-    <hr />
-    <pre>{{ model | json }}</pre>
-
-    <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="modela">
-      <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="1" /> Left (pre-checked)
-      </label>
-      <label ngbButtonLabel class="btn-primary"> <input ngbButton type="radio" [value]="2" /> Middle </label>
-      <label ngbButtonLabel class="btn-primary"> <input ngbButton type="radio" [value]="3" /> Right </label>
-    </div>
-    <hr />
-    <pre>{{ model }}</pre>
-
     <div class="card-body">
-      <p>Codeboooks are alive</p>
+      <div class="table-responsive-sm" *ngIf="codebookDetailWithData && codebookDetailWithData?.data?.length != 0">
+        <table mat-table [dataSource]="codebookDetailWithData.data" class="mat-elevation-z8">
+          <ng-container [matColumnDef]="column" *ngFor="let column of columns">
+            <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+            <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
+
+      <p *ngIf="!codebookDetailWithData || codebookDetailWithData?.data?.length === 0">No data</p>
 
       <div class="table-responsive-sm">
         <!-- Angular Datatables server side paging -->
@@ -70,6 +58,8 @@
               <th>Is Nullable</th>
               <th>DataType</th>
               <th>Maximum Length</th>
+              <th>Is Identity</th>
+              <th>Is PrimaryKey</th>
             </tr>
           </thead>
           <tbody *ngIf="codeboookDetail && codeboookDetail?.columns?.length != 0">
@@ -82,6 +72,8 @@
               <td>{{ codebookColumn.isNullable }}</td>
               <td>{{ codebookColumn.dataType }}</td>
               <td>{{ codebookColumn.maximumLength }}</td>
+              <td>{{ codebookColumn.isIdentity }}</td>
+              <td>{{ codebookColumn.isPrimaryKey }}</td>
             </tr>
           </tbody>
           <tbody *ngIf="codeboookDetail?.columns?.length == 0">
@@ -91,29 +83,6 @@
           </tbody>
         </table>
       </div>
-
-      <div class="table-responsive-sm" *ngIf="codebookDetailWithData && codebookDetailWithData?.data?.length != 0">
-        <!-- Angular Datatables server side paging -->
-        <!-- <table class="table-border hover table">
-          <thead>
-            <tr>
-              <th *ngFor="let codebookColumn of codebookDetailWithData.columns">{{ codebookColumn.name }}</th>
-            </tr>
-          </thead>
-          <tbody *ngIf="codebookDetailWithData && codebookDetailWithData?.data?.length != 0">
-            <tr *ngFor="let codebookData of codebookDetailWithData.data">
-              <td>{{ codebookData.name }}</td>
-            </tr>
-          </tbody>
-          <tbody *ngIf="codebookDetailWithData?.data?.length == 0">
-            <tr>
-              <td colspan="3" class="no-data-available">No data!</td>
-            </tr>
-          </tbody>
-        </table> -->
-      </div>
-
-      <p *ngIf="!codebookDetailWithData || codebookDetailWithData?.data?.length === 0">No data</p>
     </div>
     <div class="card-footer">*Searchable columns are Number, Title and Description</div>
   </div>

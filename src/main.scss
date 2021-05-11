@@ -15,3 +15,12 @@
 
 // Theme customization
 @import "theme/theme";
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+  margin: 0;
+}
+
+.basic-container {
+  padding: 30px;
+}

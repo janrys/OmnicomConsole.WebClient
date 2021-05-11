@@ -5,12 +5,14 @@ import { marker } from '@biesbjerg/ngx-translate-extract-marker';
 import { MasterComponent } from './master.component';
 import { Shell } from '@app/shell/shell.service';
 
-const routes: Routes = [
+/* const routes: Routes = [
   Shell.childRoutes([
     { path: '', redirectTo: '/master', pathMatch: 'full' },
     { path: 'master', component: MasterComponent, data: { title: marker('Master') } },
   ]),
-];
+]; */
+
+const routes: Routes = [{ path: '', component: MasterComponent, data: { title: marker('Master') } }];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
