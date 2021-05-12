@@ -57,6 +57,10 @@ export class ApiEndpointsService {
   public getCodebookData = (codebookName: string): string =>
     this.createUrlWithPathVariables('Codebooks', [codebookName, 'data']);
 
+  public getReleasesEndpoint = (): string => this.createUrl('Releases');
+
+  public getRequestData = (releaseId: number): string =>
+    this.createUrlWithPathVariables('Releases', [releaseId, 'requests']);
   // Call API technique https://medium.com/better-programming/angular-api-calls-the-right-way-264198bf2c64
 
   // call Mock endpoint
