@@ -1,0 +1,30 @@
+﻿<h2 mat-dialog-title>New release</h2>
+
+<div mat-dialog-content>
+  <mat-form-field>
+    <label mat-label>Id</label>
+    <input matInput [(ngModel)]="data.id" placeholder="Id" ngDefaultControl name="id" />
+    <mat-hint>Id bude vyplněno automaticky</mat-hint>
+    <!--  <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error> -->
+  </mat-form-field>
+  <mat-form-field>
+    <label mat-label>Name</label>
+    <input matInput [(ngModel)]="data.name" placeholder="name" ngDefaultControl name="name" />
+  </mat-form-field>
+  <mat-form-field>
+    <label mat-label>Date</label>
+    <input matInput [(ngModel)]="data.date" placeholder="date" ngDefaultControl name="date" />
+  </mat-form-field>
+  <mat-form-field>
+    <label mat-label>Version</label>
+    <input matInput [(ngModel)]="data.version" placeholder="version" ngDefaultControl name="version" />
+  </mat-form-field>
+  <mat-form-field>
+    <label mat-label>Status</label>
+    <input matInput [(ngModel)]="data.status" placeholder="status" ngDefaultControl name="status" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Add</button>
+</div>

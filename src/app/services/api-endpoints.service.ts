@@ -61,8 +61,19 @@ export class ApiEndpointsService {
 
   public getRequestData = (releaseId: number): string =>
     this.createUrlWithPathVariables('Releases', [releaseId, 'requests']);
-  // Call API technique https://medium.com/better-programming/angular-api-calls-the-right-way-264198bf2c64
 
+  // users
+  public getUserLoginEndpoint = (): string => this.createUrl('Users/login');
+  public getUserMeEndpoint = (): string => this.createUrl('Users/me');
+  public getUserTokenEndpoint(code: string): string {
+    return this.createUrlWithQueryParameters('Users/token', (qs: QueryStringParameters) => {
+      qs.push('code', code);
+    });
+  }
+  public getUserRefreshTokenEndpoint = (): string => this.createUrl('Users/refreshToken');
+  public getUserLogoutEndpoint = (): string => this.createUrl('Users/logout');
+
+  // Call API technique https://medium.com/better-programming/angular-api-calls-the-right-way-264198bf2c64
   // call Mock endpoint
   // https://angular-datatables-demo-server.herokuapp.com
   public getPositionByIdEndpoint = (id: string): string => this.createUrlWithPathVariables('Positions', [id]);

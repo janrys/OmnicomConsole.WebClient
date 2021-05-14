@@ -5,12 +5,12 @@
         <h3 class="text-info">Release</h3>
       </div>
       <div class="float-right">
-        <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-plus"></i> Nový release</a>
+        <a class="btn btn-primary" (click)="addRelease()"><i class="fa fa-plus"></i> Nový release</a>
       </div>
 
       <div class="card-body">
         <div class="table-responsive-sm" *ngIf="releases && releases?.length != 0">
-          <table mat-table [dataSource]="releases" class="mat-elevation-z8">
+          <table mat-table [dataSource]="releasesdataSource" class="mat-elevation-z8">
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef>Id</th>
               <td mat-cell *matCellDef="let element">{{ element.id }}</td>
@@ -75,6 +75,7 @@
           </table>
         </div>
 
+        <br />
         <p *ngIf="!requests || requests?.length === 0">Žádné requesty nejsou založené pro tento release</p>
       </div>
       <div class="card-footer">*Searchable columns are Number, Title and Description</div>

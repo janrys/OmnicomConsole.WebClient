@@ -45,8 +45,8 @@ export class CodebooksComponent implements OnInit {
   }
 
   onCodebookSelected(e: Event) {
-    let codebookName: string = e.target.value;
-    console.log('the selected codebook is ' + codebookName);
+    let element = e.target as HTMLSelectElement;
+    let codebookName: string = element.value;
 
     this.apiHttpService.get(this.apiEndpointsService.getCodebookDetail(codebookName)).subscribe(
       (resp) => {
