@@ -13,7 +13,6 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(public authService: AuthService, private userService: UserService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // let token = this.authService.token;
     this.accessToken = this.authService.token;
     this.refresh();
 
