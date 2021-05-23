@@ -57,10 +57,17 @@ export class ApiEndpointsService {
   public getCodebookData = (codebookName: string): string =>
     this.createUrlWithPathVariables('Codebooks', [codebookName, 'data']);
 
+  // releases
   public getReleasesEndpoint = (): string => this.createUrl('Releases');
 
   public getRequestData = (releaseId: number): string =>
     this.createUrlWithPathVariables('Releases', [releaseId, 'requests']);
+
+  public postReleaseEndpoint = (): string => this.createUrl('Releases');
+  public postRequestEndpoint = (): string => this.createUrl('Releases/requests');
+  public putRequestEndpoint = (): string => this.createUrl('Releases/requests');
+  public deleteRequestByIdEndpoint = (id: number): string =>
+    this.createUrlWithPathVariables('Releases', ['requests', id]);
 
   // users
   public getUserLoginEndpoint = (): string => this.createUrl('Users/login');

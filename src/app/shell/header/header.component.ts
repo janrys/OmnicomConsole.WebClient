@@ -22,4 +22,10 @@ export class HeaderComponent implements OnInit {
   toggleMenu() {
     this.menuHidden = !this.menuHidden;
   }
+
+  login() {
+    this.userService.getMe().subscribe((data) => {
+      this.currentUser = data as UserMe;
+    });
+  }
 }

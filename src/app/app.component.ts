@@ -9,6 +9,7 @@ import { environment } from '@env/environment';
 import { Logger, UntilDestroy, untilDestroyed } from '@core';
 import { I18nService } from '@app/i18n';
 import { AuthService } from './services/auth-service';
+import { MatIconRegistry } from '@angular/material/icon';
 
 const log = new Logger('App');
 
@@ -25,7 +26,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private titleService: Title,
     private translateService: TranslateService,
     private i18nService: I18nService,
-    private authService: AuthService
+    private authService: AuthService,
+    public matIconRegistry: MatIconRegistry
   ) {}
 
   ngOnInit() {

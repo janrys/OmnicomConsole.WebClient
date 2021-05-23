@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 
 import { environment } from '@env/environment';
 import { CoreModule } from '@core';
@@ -23,6 +24,7 @@ import { ShellModule } from './shell/shell.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DialogNewRelease } from './release/dialog-new-release.component';
+import { DialogNewRequest } from './release/dialog-new-request.component';
 
 @NgModule({
   imports: [
@@ -39,6 +41,7 @@ import { DialogNewRelease } from './release/dialog-new-release.component';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
+    MatIconModule,
     CoreModule,
     SharedModule,
     ShellModule,
@@ -47,9 +50,9 @@ import { DialogNewRelease } from './release/dialog-new-release.component';
     CodebooksModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
-  declarations: [AppComponent, DialogNewRelease],
-  entryComponents: [DialogNewRelease],
-  providers: [],
+  declarations: [AppComponent, DialogNewRelease, DialogNewRequest],
+  entryComponents: [DialogNewRelease, DialogNewRequest],
+  providers: [MatIconRegistry],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

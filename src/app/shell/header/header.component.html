@@ -44,7 +44,8 @@
       </div>
 
       <div class="navbar-nav ml-auto">
-        <div class="navbar-text text-muted">{{ currentUser.name }}</div>
+        <div class="navbar-text text-muted" *ngIf="currentUser">{{ currentUser.name }}</div>
+        <a *ngIf="!currentUser" class="btn btn-primary" (click)="login()"><i class="fa fa-user"></i> Login</a>
         <!-- <app-language-selector inNavbar="true" menuClass="dropdown-menu dropdown-menu-right"></app-language-selector> -->
       </div>
     </div>
