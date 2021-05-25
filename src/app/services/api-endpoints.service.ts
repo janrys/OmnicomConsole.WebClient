@@ -51,11 +51,19 @@ export class ApiEndpointsService {
 
   // codebooks
   public getCodebooksEndpoint = (): string => this.createUrl('Codebooks');
+  public getCodebooksEndpointWithRds(includeRds: boolean): string {
+    return this.createUrlWithQueryParameters('Codebooks', (qs: QueryStringParameters) => {
+      qs.push('includeRds', includeRds);
+    });
+  }
 
   public getCodebookDetail = (codebookName: string): string =>
     this.createUrlWithPathVariables('Codebooks', [codebookName]);
   public getCodebookData = (codebookName: string): string =>
     this.createUrlWithPathVariables('Codebooks', [codebookName, 'data']);
+
+  // lock
+  public getLockStateEndpoint = (): string => this.createUrl('Codebooks/lock');
 
   // releases
   public getReleasesEndpoint = (): string => this.createUrl('Releases');
@@ -64,6 +72,9 @@ export class ApiEndpointsService {
     this.createUrlWithPathVariables('Releases', [releaseId, 'requests']);
 
   public postReleaseEndpoint = (): string => this.createUrl('Releases');
+  public putReleaseEndpoint = (): string => this.createUrl('Releases');
+  public deleteReleaseByIdEndpoint = (id: number): string => this.createUrlWithPathVariables('Releases', [id]);
+
   public postRequestEndpoint = (): string => this.createUrl('Releases/requests');
   public putRequestEndpoint = (): string => this.createUrl('Releases/requests');
   public deleteRequestByIdEndpoint = (id: number): string =>

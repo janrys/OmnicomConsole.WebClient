@@ -3,19 +3,31 @@
     <div class="card-header">
       <div class="float-left">
         <h3 class="text-info">Codebooks</h3>
-        <select class="form-select" aria-label="Codebooks select" (change)="onCodebookSelected($event)">
+        <select
+          class="form-select"
+          aria-label="Codebooks select"
+          (change)="onCodebookSelected($event)"
+          name="codebooksSelect"
+        >
           <option selected disabled [value]="null">Select codebook name</option>
           <option *ngFor="let codebook of codeboooks" [value]="encodeSpecialCharacters(codebook.fullName)">
             {{ codebook.name }}
           </option>
         </select>
-      </div>
-      <div class="float-right">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="flex-check-default" />
-          <label class="form-check-label" for="flex-check-default"> Show RDS codebooks </label>
-        </div>
 
+        <section>
+          <mat-checkbox [(ngModel)]="showRds" name="chkboxShowRds" (change)="onShowRdsChange($event)">
+            Show RDS codebooks</mat-checkbox
+          >
+        </section>
+      </div>
+
+      <div class="form-check ml-5">
+        <pre *ngIf="!lockState">unlocked</pre>
+        <pre *ngIf="lockState">locked for {{ lockState.forUserName }}</pre>
+      </div>
+
+      <div class="float-right">
         <!-- <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="lockState">
           <label ngbButtonLabel class="btn-outline-danger">
             <input ngbButton type="radio" value="lock" /><i class="fa fa-lock"></i> Lock
@@ -24,8 +36,6 @@
             <input ngbButton type="radio" value="unlock" /><i class="fa fa-unlock"></i> Unlock
           </label>
         </div> -->
-
-        <pre>{{ lockState }}</pre>
 
         <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-plus"></i> Add</a>
         <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-edit"></i> Edit</a>

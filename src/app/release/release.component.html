@@ -32,11 +32,23 @@
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let element">{{ element.status }}</td>
           </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="editRelease(element)">
+                <i class="fa fa-edit"></i>
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm" (click)="deleteRelease(element['id'])">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="releaseDisplayedColumns"></tr>
           <tr
             mat-row
             *matRowDef="let release; columns: releaseDisplayedColumns"
+            [ngClass]="{ highlight: selectedRelease.id == release.id }"
             (click)="onReleaseSelected(release)"
           ></tr>
         </table>

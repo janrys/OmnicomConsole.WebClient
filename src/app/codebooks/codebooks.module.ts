@@ -8,6 +8,7 @@ import { CodebooksComponent } from './codebooks.component';
 import { DataTablesModule } from 'angular-datatables';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 //import { ToastComponent } from '@shared/toast/toast.component';
 //import { ToastsContainer } from './toasts-container.component';
@@ -21,6 +22,7 @@ import { MatTableModule } from '@angular/material/table';
     DataTablesModule,
     FormsModule,
     MatTableModule,
+    MatCheckboxModule,
   ],
   declarations: [CodebooksComponent],
 })

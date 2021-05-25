@@ -26,7 +26,7 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
   releasesdataSource: MatTableDataSource<Release>;
   @ViewChild(MatSort) sort: MatSort;
   requestsdataSource: MatTableDataSource<ReleaseRequest>;
-  releaseDisplayedColumns: string[] = ['id', 'name', 'date', 'version', 'status'];
+  releaseDisplayedColumns: string[] = ['id', 'name', 'date', 'version', 'status', 'actions'];
   requestDisplayedColumns: string[] = ['id', 'name', 'sequenceNumber', 'description', 'status', 'actions'];
   constructor(
     private apiHttpService: ApiHttpService,
@@ -41,6 +41,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
       (resp) => {
         this.releases = resp;
         this.releasesdataSource = new MatTableDataSource<Release>(this.releases);
+
+        if (this.releases.length > 0) {
+          this.onReleaseSelected(this.releases[0]);
+        }
       },
       (error) => {
         log.debug(error);
@@ -87,13 +91,63 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
       this.apiHttpService.post(this.apiEndpointsService.postReleaseEndpoint(), result).subscribe(
         (resp) => {
           this.releases.push(resp);
+          this.releasesdataSource.data = this.releases;
           this.requestsdataSource.data = this.requests;
+          this.showSuccess('Release inserted', `Release with id ${resp.id} was inserted`);
         },
         (error) => {
+          this.showError('Insert failed', `Release insert failed with error ${error}`);
           log.debug(error);
         }
       );
     });
+  }
+
+  editRelease(editRelease: Release) {
+    let dialogRef = this.dialog.open(DialogNewRelease, {
+      width: '250px',
+      data: editRelease,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.apiHttpService.put(this.apiEndpointsService.putReleaseEndpoint(), result).subscribe(
+        (resp) => {
+          var index = this.releases.findIndex((x) => x.id == resp.id);
+          this.releases[index] = resp;
+          this.releasesdataSource.data = this.releases;
+          this.showSuccess('Release updated', `Release with id ${resp.id} was updated`);
+        },
+        (error) => {
+          this.showError('Update failed', `Release update with id ${result.id} failed with error ${error}`);
+          log.debug(error);
+        }
+      );
+    });
+  }
+
+  deleteRelease(id: number) {
+    this.confirmationDialogService
+      .confirm('Request delete', 'Are you sure you want to delete release with all requests?')
+      .then((confirmed) => {
+        if (confirmed) {
+          this.apiHttpService.delete(this.apiEndpointsService.deleteReleaseByIdEndpoint(id)).subscribe(
+            (resp) => {
+              var index = this.releases.findIndex((x) => x.id == id);
+              this.releases.splice(index, 1);
+              this.releasesdataSource.data = this.releases;
+              this.showSuccess('Release', `Release with id ${id} was deleted`);
+              log.debug('onDelete: ', id);
+            },
+            (error) => {
+              this.showError('Delete failed', `Request delete with id ${id} failed with error ${error}`);
+              log.debug('onDelete: ', error);
+            }
+          );
+        }
+      })
+      .catch(() => {
+        log.debug('onDelete: ', 'Cancel');
+      });
   }
 
   addRequest() {

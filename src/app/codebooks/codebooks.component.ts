@@ -6,6 +6,8 @@ import { Logger } from '@core';
 import { Codebook } from '@shared/models/Codebook';
 import { CodebookDetail } from '@app/@shared/models/codebookDetail';
 import { CodebookDetailWithData } from '@app/@shared/models/codebookDetailWithData';
+import { LockState } from '@app/@shared/models/lockState';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 const log = new Logger('Codebooks');
 
@@ -19,8 +21,9 @@ export class CodebooksComponent implements OnInit {
   codeboookDetail: CodebookDetail;
   codebookDetailWithData: CodebookDetailWithData;
   columns: string[];
-  lockState: string = 'unlock';
+  lockState: LockState = undefined;
   modela = 1;
+  showRds: boolean = false;
   model = {
     left: true,
     middle: false,
@@ -30,9 +33,18 @@ export class CodebooksComponent implements OnInit {
   constructor(private apiHttpService: ApiHttpService, private apiEndpointsService: ApiEndpointsService) {}
 
   ngOnInit(): void {
-    this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpoint()).subscribe(
+    this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpointWithRds(this.showRds)).subscribe(
       (resp) => {
         this.codeboooks = resp;
+      },
+      (error) => {
+        log.debug(error);
+      }
+    );
+
+    this.apiHttpService.get(this.apiEndpointsService.getLockStateEndpoint()).subscribe(
+      (resp) => {
+        this.lockState = resp;
       },
       (error) => {
         log.debug(error);
@@ -62,6 +74,17 @@ export class CodebooksComponent implements OnInit {
         this.codebookDetailWithData = resp;
         this.codeboookDetail = resp;
         this.columns = Object.keys(this.codebookDetailWithData.data[0]);
+      },
+      (error) => {
+        log.debug(error);
+      }
+    );
+  }
+
+  onShowRdsChange(event: MatCheckboxChange) {
+    this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpointWithRds(event.checked)).subscribe(
+      (resp) => {
+        this.codeboooks = resp;
       },
       (error) => {
         log.debug(error);
