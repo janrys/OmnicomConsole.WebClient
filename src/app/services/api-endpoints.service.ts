@@ -64,6 +64,8 @@ export class ApiEndpointsService {
 
   // lock
   public getLockStateEndpoint = (): string => this.createUrl('Codebooks/lock');
+  public createLockEndpoint = (): string => this.createUrl('Codebooks/lock');
+  public releaseLockEndpoint = (): string => this.createUrl('Codebooks/lock');
 
   // releases
   public getReleasesEndpoint = (): string => this.createUrl('Releases');

@@ -8,6 +8,9 @@ import { CodebookDetail } from '@app/@shared/models/codebookDetail';
 import { CodebookDetailWithData } from '@app/@shared/models/codebookDetailWithData';
 import { LockState } from '@app/@shared/models/lockState';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { UserMe } from '@app/@shared/models/UserMe';
+import { UserService } from '@app/services/user-service';
+import { ToastService } from '@app/services/toast.service';
 
 const log = new Logger('Codebooks');
 
@@ -24,13 +27,19 @@ export class CodebooksComponent implements OnInit {
   lockState: LockState = undefined;
   modela = 1;
   showRds: boolean = false;
+  currentUser: UserMe;
   model = {
     left: true,
     middle: false,
     right: false,
   };
 
-  constructor(private apiHttpService: ApiHttpService, private apiEndpointsService: ApiEndpointsService) {}
+  constructor(
+    private apiHttpService: ApiHttpService,
+    private apiEndpointsService: ApiEndpointsService,
+    private userService: UserService,
+    public toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpointWithRds(this.showRds)).subscribe(
@@ -41,6 +50,10 @@ export class CodebooksComponent implements OnInit {
         log.debug(error);
       }
     );
+
+    this.userService.getMe().subscribe((data) => {
+      this.currentUser = data as UserMe;
+    });
 
     this.apiHttpService.get(this.apiEndpointsService.getLockStateEndpoint()).subscribe(
       (resp) => {
@@ -90,5 +103,52 @@ export class CodebooksComponent implements OnInit {
         log.debug(error);
       }
     );
+  }
+
+  createLock() {
+    this.apiHttpService.post(this.apiEndpointsService.createLockEndpoint(), []).subscribe(
+      (resp) => {
+        this.lockState = resp;
+        this.showSuccess(
+          'Lock created',
+          `Lock created for current user ${resp.forUserName} for release id ${resp.forReleaseId}`
+        );
+      },
+      (error) => {
+        this.showError('Lock failed', `Cannot create lock because ${error}`);
+        log.debug(error);
+      }
+    );
+  }
+
+  releaseLock() {
+    this.apiHttpService.delete(this.apiEndpointsService.releaseLockEndpoint()).subscribe(
+      (resp) => {
+        this.lockState = resp;
+        this.showSuccess('Lock released', `Lock has been released`);
+      },
+      (error) => {
+        this.showError('Lock release failed', `Lock release failed because ${error}`);
+        log.debug(error);
+      }
+    );
+  }
+
+  showSuccess(headerText: string, bodyText: string) {
+    this.toastService.show(bodyText, {
+      classname: 'bg-success text-light',
+      delay: 2000,
+      autohide: true,
+      headertext: headerText,
+    });
+  }
+
+  showError(headerText: string, bodyText: string) {
+    this.toastService.show(bodyText, {
+      classname: 'bg-danger text-light',
+      delay: 2000,
+      autohide: true,
+      headertext: headerText,
+    });
   }
 }

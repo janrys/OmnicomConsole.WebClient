@@ -3,6 +3,7 @@
     <div class="card-header">
       <div class="float-left">
         <h3 class="text-info">Codebooks</h3>
+
         <select
           class="form-select"
           aria-label="Codebooks select"
@@ -22,9 +23,21 @@
         </section>
       </div>
 
-      <div class="form-check ml-5">
-        <pre *ngIf="!lockState">unlocked</pre>
-        <pre *ngIf="lockState">locked for {{ lockState.forUserName }}</pre>
+      <div class="form-check ml-6">
+        <a *ngIf="!lockState.isLocked" class="btn btn-outline-secondary ml-5" (click)="createLock()"
+          ><i class="fa fa-lock-open"></i> Unlocked</a
+        >
+        <a
+          *ngIf="lockState.isLocked && currentUser.identifier !== lockState.forUserId"
+          class="btn btn-primary ml-5 disabled"
+          ><i class="fa fa-lock"></i> Locked for {{ lockState.forUserName }}</a
+        >
+        <a
+          *ngIf="lockState.isLocked && currentUser.identifier === lockState.forUserId"
+          class="btn btn-warning ml-5"
+          (click)="releaseLock()"
+          ><i class="fa fa-lock"></i> Locked</a
+        >
       </div>
 
       <div class="float-right">
