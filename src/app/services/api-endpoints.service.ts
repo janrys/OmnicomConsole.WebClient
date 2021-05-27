@@ -92,6 +92,7 @@ export class ApiEndpointsService {
   }
   public getUserRefreshTokenEndpoint = (): string => this.createUrl('Users/refreshToken');
   public getUserLogoutEndpoint = (): string => this.createUrl('Users/logout');
+  public getMetadataEndpoint = (): string => this.createUrl('Users/metadata');
 
   // Call API technique https://medium.com/better-programming/angular-api-calls-the-right-way-264198bf2c64
   // call Mock endpoint

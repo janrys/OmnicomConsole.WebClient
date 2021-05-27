@@ -23,7 +23,7 @@
         </section>
       </div>
 
-      <div class="form-check ml-6">
+      <div class="form-check ml-6" *ngIf="!isReadOnly">
         <a *ngIf="!lockState.isLocked" class="btn btn-outline-secondary ml-5" (click)="createLock()"
           ><i class="fa fa-lock-open"></i> Unlocked</a
         >
@@ -40,72 +40,79 @@
         >
       </div>
 
-      <div class="float-right">
-        <!-- <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="lockState">
-          <label ngbButtonLabel class="btn-outline-danger">
-            <input ngbButton type="radio" value="lock" /><i class="fa fa-lock"></i> Lock
-          </label>
-          <label ngbButtonLabel class="btn-outline-primary">
-            <input ngbButton type="radio" value="unlock" /><i class="fa fa-unlock"></i> Unlock
-          </label>
-        </div> -->
-
-        <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-plus"></i> Add</a>
-        <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-edit"></i> Edit</a>
-        <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-copy"></i> Copy</a>
-        <a class="btn btn-primary" [routerLink]="['/codebooks/unlock']"><i class="fa fa-trash"></i> Delete</a>
+      <div class="float-right" *ngIf="!isReadOnly && codebookDetailWithData">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="addRecord()"
+          [ngClass]="{ disabled: !codebookDetailWithData.isEditable }"
+        >
+          <i class="fa fa-plus"></i> Add
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="editRecord()"
+          [ngClass]="{ disabled: !codebookDetailWithData.isEditable || this.selection.selected.length !== 1 }"
+        >
+          <i class="fa fa-edit"></i> Edit
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="copyRecord()"
+          [ngClass]="{ disabled: !codebookDetailWithData.isEditable || this.selection.selected.length !== 1 }"
+        >
+          <i class="fa fa-copy"></i> Copy
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="removeRecord()"
+          [ngClass]="{ disabled: !codebookDetailWithData.isEditable || this.selection.selected.length === 0 }"
+        >
+          <i class="fa fa-trash"></i> Delete
+        </button>
       </div>
     </div>
 
     <div class="card-body">
-      <div class="table-responsive-sm" *ngIf="codebookDetailWithData && codebookDetailWithData?.data?.length != 0">
-        <table mat-table [dataSource]="codebookDetailWithData.data" class="mat-elevation-z8">
+      <div class="text-info" *ngIf="codebookdataSource && codebookdataSource.data.length != 0">
+        {{ codebookDetailWithData.name.split('_').join(' ') }}
+      </div>
+
+      <div class="table-responsive-sm" *ngIf="codebookdataSource && codebookdataSource.data.length != 0">
+        <table mat-table [dataSource]="codebookdataSource" class="mat-elevation-z8">
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+              >
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)"
+              >
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
           <ng-container [matColumnDef]="column" *ngFor="let column of columns">
             <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
             <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayColumns" (click)="selection.toggle(row)"></tr>
         </table>
       </div>
 
       <p *ngIf="!codebookDetailWithData || codebookDetailWithData?.data?.length === 0">No data</p>
-
-      <div class="table-responsive-sm">
-        <!-- Angular Datatables server side paging -->
-        <table datatable class="table-border hover">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Is Nullable</th>
-              <th>DataType</th>
-              <th>Maximum Length</th>
-              <th>Is Identity</th>
-              <th>Is PrimaryKey</th>
-            </tr>
-          </thead>
-          <tbody *ngIf="codeboookDetail && codeboookDetail?.columns?.length != 0">
-            <tr *ngFor="let codebookColumn of codeboookDetail.columns">
-              <td>
-                <!-- Hyperlink position number with routerLink and position Id parameter -->
-                <a [routerLink]="['/detail', codebookColumn.name]">{{ codebookColumn.name }}</a>
-              </td>
-              <td>{{ codebookColumn.name }}</td>
-              <td>{{ codebookColumn.isNullable }}</td>
-              <td>{{ codebookColumn.dataType }}</td>
-              <td>{{ codebookColumn.maximumLength }}</td>
-              <td>{{ codebookColumn.isIdentity }}</td>
-              <td>{{ codebookColumn.isPrimaryKey }}</td>
-            </tr>
-          </tbody>
-          <tbody *ngIf="codeboookDetail?.columns?.length == 0">
-            <tr>
-              <td colspan="3" class="no-data-available">No data!</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
     <div class="card-footer">*Searchable columns are Number, Title and Description</div>
   </div>

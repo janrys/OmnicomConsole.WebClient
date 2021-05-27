@@ -4,13 +4,16 @@ import { ApiHttpService } from '@app/services/api-http.service';
 import { ApiEndpointsService } from '@app/services/api-endpoints.service';
 import { Logger } from '@core';
 import { Codebook } from '@shared/models/Codebook';
-import { CodebookDetail } from '@app/@shared/models/codebookDetail';
 import { CodebookDetailWithData } from '@app/@shared/models/codebookDetailWithData';
 import { LockState } from '@app/@shared/models/lockState';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { UserMe } from '@app/@shared/models/UserMe';
 import { UserService } from '@app/services/user-service';
 import { ToastService } from '@app/services/toast.service';
+import { ApplicationMetadata } from '@app/@shared/models/applicationMetadata';
+import { MatTableDataSource } from '@angular/material/table';
+import { SelectionModel } from '@angular/cdk/collections';
+import { ConfirmationDialogService } from '@app/services/confirmation-dialog.service';
 
 const log = new Logger('Codebooks');
 
@@ -21,13 +24,25 @@ const log = new Logger('Codebooks');
 })
 export class CodebooksComponent implements OnInit {
   codeboooks: Codebook[];
-  codeboookDetail: CodebookDetail;
   codebookDetailWithData: CodebookDetailWithData;
+  codebookdataSource: MatTableDataSource<any>;
+  selection = new SelectionModel<any>(true, []);
   columns: string[];
-  lockState: LockState = undefined;
+  displayColumns: string[];
+  lockState: LockState = { isLocked: true, forUserId: '', forUserName: '', created: new Date(), forReleaseId: 0 };
   modela = 1;
   showRds: boolean = false;
-  currentUser: UserMe;
+  currentUser: UserMe = {
+    name: '',
+    identifier: '',
+    upn: '',
+    roles: [''],
+    accessTokenExpiration: new Date(),
+    refreshTokenExpiration: new Date(),
+    idTokenExpiration: new Date(),
+  };
+  applicationMetadata: ApplicationMetadata;
+  isReadOnly: boolean;
   model = {
     left: true,
     middle: false,
@@ -38,7 +53,8 @@ export class CodebooksComponent implements OnInit {
     private apiHttpService: ApiHttpService,
     private apiEndpointsService: ApiEndpointsService,
     private userService: UserService,
-    public toastService: ToastService
+    public toastService: ToastService,
+    private confirmationDialogService: ConfirmationDialogService
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +70,16 @@ export class CodebooksComponent implements OnInit {
     this.userService.getMe().subscribe((data) => {
       this.currentUser = data as UserMe;
     });
+
+    this.apiHttpService.get(this.apiEndpointsService.getMetadataEndpoint()).subscribe(
+      (resp) => {
+        this.applicationMetadata = resp;
+        this.isReadOnly = this.applicationMetadata.mode === 'read_only';
+      },
+      (error) => {
+        log.debug(error);
+      }
+    );
 
     this.apiHttpService.get(this.apiEndpointsService.getLockStateEndpoint()).subscribe(
       (resp) => {
@@ -73,20 +99,17 @@ export class CodebooksComponent implements OnInit {
     let element = e.target as HTMLSelectElement;
     let codebookName: string = element.value;
 
-    this.apiHttpService.get(this.apiEndpointsService.getCodebookDetail(codebookName)).subscribe(
-      (resp) => {
-        this.codeboookDetail = resp;
-      },
-      (error) => {
-        log.debug(error);
-      }
-    );
-
     this.apiHttpService.get(this.apiEndpointsService.getCodebookData(codebookName)).subscribe(
       (resp) => {
         this.codebookDetailWithData = resp;
-        this.codeboookDetail = resp;
+        this.selection.clear();
+        this.codebookdataSource = new MatTableDataSource<any>(this.codebookDetailWithData.data);
         this.columns = Object.keys(this.codebookDetailWithData.data[0]);
+        this.displayColumns = Object.keys(this.codebookDetailWithData.data[0]);
+
+        if (!this.isReadOnly && this.codebookDetailWithData.isEditable) {
+          this.displayColumns.unshift('select');
+        }
       },
       (error) => {
         log.debug(error);
@@ -115,7 +138,7 @@ export class CodebooksComponent implements OnInit {
         );
       },
       (error) => {
-        this.showError('Lock failed', `Cannot create lock because ${error}`);
+        this.showError('Lock failed', `Cannot create lock because ${error.message} ${error.error.title}`);
         log.debug(error);
       }
     );
@@ -128,10 +151,73 @@ export class CodebooksComponent implements OnInit {
         this.showSuccess('Lock released', `Lock has been released`);
       },
       (error) => {
-        this.showError('Lock release failed', `Lock release failed because ${error}`);
+        this.showError('Lock release failed', `Lock release failed because ${error.message} ${error.error.title}`);
         log.debug(error);
       }
     );
+  }
+
+  addRecord() {
+    if (!this.codebookDetailWithData.isEditable) {
+      return;
+    }
+  }
+
+  editRecord() {
+    if (!this.codebookDetailWithData.isEditable || this.selection.selected.length !== 1) {
+      return;
+    }
+  }
+
+  copyRecord() {
+    if (!this.codebookDetailWithData.isEditable || this.selection.selected.length !== 1) {
+      return;
+    }
+  }
+
+  removeRecord() {
+    if (!this.codebookDetailWithData.isEditable || this.selection.selected.length === 0) {
+      return;
+    }
+
+    this.confirmationDialogService
+      .confirm('Delete records', `Delete ${this.selection.selected.length} record(s)?`)
+      .then((confirmed) => {
+        if (confirmed) {
+          this.apiHttpService.delete(this.apiEndpointsService.deleteReleaseByIdEndpoint(-145)).subscribe(
+            (resp) => {
+              /* var index = this.releases.findIndex((x) => x.id == id);
+              this.releases.splice(index, 1);
+              this.releasesdataSource.data = this.releases; */
+              this.showSuccess('Records deleted', `${this.selection.selected.length} record(s) were deleted`);
+              log.debug('onDelete: ', this.selection.selected.length);
+            },
+            (error) => {
+              this.showError(
+                'Delete failed',
+                `Deletion of records failed with error ${error.message} ${error.error.title}`
+              );
+              log.debug('onDelete: ', error);
+            }
+          );
+        }
+      })
+      .catch(() => {
+        log.debug('onDelete: ', 'Cancel');
+      });
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.codebookdataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.codebookdataSource.data.forEach((row) => this.selection.select(row));
   }
 
   showSuccess(headerText: string, bodyText: string) {

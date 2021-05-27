@@ -96,7 +96,7 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           this.showSuccess('Release inserted', `Release with id ${resp.id} was inserted`);
         },
         (error) => {
-          this.showError('Insert failed', `Release insert failed with error ${error}`);
+          this.showError('Insert failed', `Release insert failed with error ${error.message} ${error.error.title}`);
           log.debug(error);
         }
       );
@@ -118,7 +118,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           this.showSuccess('Release updated', `Release with id ${resp.id} was updated`);
         },
         (error) => {
-          this.showError('Update failed', `Release update with id ${result.id} failed with error ${error}`);
+          this.showError(
+            'Update failed',
+            `Release update with id ${result.id} failed with error ${error.message} ${error.error.title}`
+          );
           log.debug(error);
         }
       );
@@ -139,7 +142,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
               log.debug('onDelete: ', id);
             },
             (error) => {
-              this.showError('Delete failed', `Request delete with id ${id} failed with error ${error}`);
+              this.showError(
+                'Delete failed',
+                `Request delete with id ${id} failed with error ${error.message} ${error.error.title}`
+              );
               log.debug('onDelete: ', error);
             }
           );
@@ -173,7 +179,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           this.showSuccess('Request inserted', `Request inserted with id ${resp.id}`);
         },
         (error) => {
-          this.showError('Insert failed', `Request insert with name ${result.name} failed with error ${error}`);
+          this.showError(
+            'Insert failed',
+            `Request insert with name ${result.name} failed with error ${error.message} ${error.error.title}`
+          );
           log.debug(error);
         }
       );
@@ -195,7 +204,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           this.showSuccess('Request updated', `Request with id ${resp.id} was updated`);
         },
         (error) => {
-          this.showError('Update failed', `Request update with id ${result.id} failed with error ${error}`);
+          this.showError(
+            'Update failed',
+            `Request update with id ${result.id} failed with error ${error.message} ${error.error.title}`
+          );
           log.debug(error);
         }
       );
@@ -216,7 +228,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
               log.debug('onDelete: ', id);
             },
             (error) => {
-              this.showError('Delete failed', `Request delete with id ${id} failed with error ${error}`);
+              this.showError(
+                'Delete failed',
+                `Request delete with id ${id} failed with error ${error.message} ${error.error.title}`
+              );
               log.debug('onDelete: ', error);
             }
           );

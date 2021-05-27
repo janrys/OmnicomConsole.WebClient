@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { environment } from '@env/environment';
 import { CoreModule } from '@core';
@@ -44,6 +45,7 @@ import { DialogNewRequest } from './release/dialog-new-request.component';
     MatDialogModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
     CoreModule,
     SharedModule,
     ShellModule,
