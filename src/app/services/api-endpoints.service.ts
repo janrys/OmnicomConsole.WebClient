@@ -61,6 +61,8 @@ export class ApiEndpointsService {
     this.createUrlWithPathVariables('Codebooks', [codebookName]);
   public getCodebookData = (codebookName: string): string =>
     this.createUrlWithPathVariables('Codebooks', [codebookName, 'data']);
+  public getCodebookDataChangeEndpoint = (codebookName: string): string =>
+    this.createUrlWithPathVariables('Codebooks', [codebookName, 'data']);
 
   // lock
   public getLockStateEndpoint = (): string => this.createUrl('Codebooks/lock');

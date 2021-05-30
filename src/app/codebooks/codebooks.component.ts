@@ -14,6 +14,7 @@ import { ApplicationMetadata } from '@app/@shared/models/applicationMetadata';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmationDialogService } from '@app/services/confirmation-dialog.service';
+import { RecordChange } from '@app/@shared/models/recordChange';
 
 const log = new Logger('Codebooks');
 
@@ -184,22 +185,50 @@ export class CodebooksComponent implements OnInit {
       .confirm('Delete records', `Delete ${this.selection.selected.length} record(s)?`)
       .then((confirmed) => {
         if (confirmed) {
-          this.apiHttpService.delete(this.apiEndpointsService.deleteReleaseByIdEndpoint(-145)).subscribe(
-            (resp) => {
-              /* var index = this.releases.findIndex((x) => x.id == id);
-              this.releases.splice(index, 1);
-              this.releasesdataSource.data = this.releases; */
-              this.showSuccess('Records deleted', `${this.selection.selected.length} record(s) were deleted`);
-              log.debug('onDelete: ', this.selection.selected.length);
-            },
-            (error) => {
-              this.showError(
-                'Delete failed',
-                `Deletion of records failed with error ${error.message} ${error.error.title}`
-              );
-              log.debug('onDelete: ', error);
-            }
-          );
+          let recordChanges: RecordChange[] = [];
+
+          let keyColumnName = this.getKeyColumnName();
+
+          if (!keyColumnName) {
+            this.showError('Delete failed', `Cannot fing primary key column`);
+
+            return;
+          }
+
+          this.selection.selected.forEach(function (record) {
+            let newRecordChange: RecordChange = {
+              operation: 'delete',
+              recordKey: { key: keyColumnName, value: record[keyColumnName] },
+              recordChanges: null,
+            };
+            recordChanges.push(newRecordChange);
+          });
+
+          this.apiHttpService
+            .put(
+              this.apiEndpointsService.getCodebookDataChangeEndpoint(this.codebookDetailWithData.name),
+              recordChanges
+            )
+            .subscribe(
+              (resp) => {
+                this.selection.selected.forEach(function (record: any) {
+                  let index: number = this.codebookDetailWithData.data.findIndex((d: any) => d === record);
+                  this.codebookDetailWithData.data.splice(index, 1);
+                }, this);
+
+                this.codebookdataSource.data = this.codebookDetailWithData.data;
+                this.showSuccess('Records deleted', `${this.selection.selected.length} record(s) were deleted`);
+                log.debug('onDelete: ', this.selection.selected.length);
+                this.selection.clear();
+              },
+              (error) => {
+                this.showError(
+                  'Delete failed',
+                  `Deletion of records failed with error ${error.message} ${error.error.title}`
+                );
+                log.debug('onDelete: ', error);
+              }
+            );
         }
       })
       .catch(() => {
@@ -207,7 +236,7 @@ export class CodebooksComponent implements OnInit {
       });
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.selection.selected.length;
     const numRows = this.codebookdataSource.data.length;
     return numSelected === numRows;
@@ -218,6 +247,10 @@ export class CodebooksComponent implements OnInit {
     this.isAllSelected()
       ? this.selection.clear()
       : this.codebookdataSource.data.forEach((row) => this.selection.select(row));
+  }
+
+  getKeyColumnName(): string {
+    return this.codebookDetailWithData.columns.find((c) => c.isPrimaryKey)?.name;
   }
 
   showSuccess(headerText: string, bodyText: string) {
