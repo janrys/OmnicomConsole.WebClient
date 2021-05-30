@@ -27,6 +27,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DialogNewRelease } from './release/dialog-new-release.component';
 import { DialogNewRequest } from './release/dialog-new-request.component';
+import { DialogNewcodebookData } from './codebooks/dialog-new-codebook-data.component';
 
 @NgModule({
   imports: [
@@ -54,8 +55,8 @@ import { DialogNewRequest } from './release/dialog-new-request.component';
     CodebooksModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
-  declarations: [AppComponent, DialogNewRelease, DialogNewRequest],
-  entryComponents: [DialogNewRelease, DialogNewRequest],
+  declarations: [AppComponent, DialogNewRelease, DialogNewRequest, DialogNewcodebookData],
+  entryComponents: [DialogNewRelease, DialogNewRequest, DialogNewcodebookData],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent],
 })

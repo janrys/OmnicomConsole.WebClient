@@ -1,0 +1,21 @@
+﻿<h2 mat-dialog-title *ngIf="dialogModel.isNewRecord">New record</h2>
+<h2 mat-dialog-title *ngIf="!dialogModel.isNewRecord">Edit record</h2>
+
+<div mat-dialog-content>
+  <mat-form-field *ngFor="let column of dialogModel.columns">
+    <label mat-label>{{column.name}}</label>
+    <input
+      matInput
+      [(ngModel)]="dialogModel.data[column.name]"
+      ngDefaultControl
+      [name]="column.name"
+      [disabled]="column.isIdentity"
+    />
+    <mat-hint>{{column.dataType}} {{column.maximumLength}}</mat-hint>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="dialogModel" cdkFocusInitial>Save</button>
+</div>

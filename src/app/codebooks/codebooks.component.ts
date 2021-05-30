@@ -7,6 +7,7 @@ import { Codebook } from '@shared/models/Codebook';
 import { CodebookDetailWithData } from '@app/@shared/models/codebookDetailWithData';
 import { LockState } from '@app/@shared/models/lockState';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { UserMe } from '@app/@shared/models/UserMe';
 import { UserService } from '@app/services/user-service';
 import { ToastService } from '@app/services/toast.service';
@@ -15,6 +16,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmationDialogService } from '@app/services/confirmation-dialog.service';
 import { RecordChange } from '@app/@shared/models/recordChange';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { DialogNewcodebookDataModel } from './DialogNewcodebookDataModel';
+import { DialogNewcodebookData } from './dialog-new-codebook-data.component';
 
 const log = new Logger('Codebooks');
 
@@ -55,7 +59,8 @@ export class CodebooksComponent implements OnInit {
     private apiEndpointsService: ApiEndpointsService,
     private userService: UserService,
     public toastService: ToastService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -162,18 +167,156 @@ export class CodebooksComponent implements OnInit {
     if (!this.codebookDetailWithData.isEditable) {
       return;
     }
-  }
 
-  editRecord() {
-    if (!this.codebookDetailWithData.isEditable || this.selection.selected.length !== 1) {
-      return;
+    let newRecord: any = {};
+
+    for (let i = 0; i < this.codebookDetailWithData.columns.length; i++) {
+      let defaultValue: any;
+
+      if (
+        this.codebookDetailWithData.columns[i].dataType.includes('char') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('text')
+      ) {
+        defaultValue = '';
+      } else if (
+        this.codebookDetailWithData.columns[i].dataType.includes('int') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('decimal') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('bit') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('numeric') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('float') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('real')
+      ) {
+        defaultValue = 0;
+      } else if (
+        this.codebookDetailWithData.columns[i].dataType.includes('date') ||
+        this.codebookDetailWithData.columns[i].dataType.includes('time')
+      ) {
+        defaultValue = new Date();
+      } else {
+        defaultValue = '';
+      }
+
+      newRecord[this.codebookDetailWithData.columns[i].name] = defaultValue;
     }
+    this.addNewRecord(newRecord);
   }
 
   copyRecord() {
     if (!this.codebookDetailWithData.isEditable || this.selection.selected.length !== 1) {
       return;
     }
+
+    let newRecord: any = Object.assign([], this.selection.selected[0]);
+    this.addNewRecord(newRecord);
+  }
+
+  addNewRecord(record: any) {
+    let keyColumnName = this.getKeyColumnName();
+    record[keyColumnName] = -1;
+
+    let dialogModel: DialogNewcodebookDataModel = {
+      data: record,
+      isNewRecord: true,
+      columns: this.codebookDetailWithData.columns,
+    };
+
+    let dialogRef = this.dialog.open(DialogNewcodebookData, {
+      width: '400px',
+      data: dialogModel,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      let keyColumnName = this.getKeyColumnName();
+
+      if (!keyColumnName) {
+        this.showError('Insert failed', `Cannot find primary key column`);
+
+        return;
+      }
+
+      let recordChanges: RecordChange[] = [];
+      let newRecordChange: RecordChange = {
+        operation: 'insert',
+        recordKey: null,
+        recordChanges: null,
+      };
+
+      let record: Record<string, any> = {};
+      for (let columnName in result.data) {
+        record[columnName] = result.data[columnName];
+      }
+      newRecordChange.recordChanges = record;
+
+      recordChanges.push(newRecordChange);
+
+      this.apiHttpService
+        .put(this.apiEndpointsService.getCodebookDataChangeEndpoint(this.codebookDetailWithData.name), recordChanges)
+        .subscribe(
+          (resp) => {
+            this.showSuccess('Record inserted', `Record was inserted`);
+            log.debug('onInsert: ');
+          },
+          (error) => {
+            this.showError('Insert failed', `Insert of record failed with error ${error.message} ${error.error.title}`);
+            log.debug('onInsert: ', error);
+          }
+        );
+    });
+  }
+
+  editRecord() {
+    if (!this.codebookDetailWithData.isEditable || this.selection.selected.length !== 1) {
+      return;
+    }
+
+    let dialogModel: DialogNewcodebookDataModel = {
+      data: this.selection.selected[0],
+      isNewRecord: false,
+      columns: this.codebookDetailWithData.columns,
+    };
+
+    let dialogRef = this.dialog.open(DialogNewcodebookData, {
+      width: '400px',
+      data: dialogModel,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      let keyColumnName = this.getKeyColumnName();
+
+      if (!keyColumnName) {
+        this.showError('Update failed', `Cannot find primary key column`);
+
+        return;
+      }
+
+      let recordChanges: RecordChange[] = [];
+      let newRecordChange: RecordChange = {
+        operation: 'update',
+        recordKey: { key: keyColumnName, value: result.data[keyColumnName] },
+        recordChanges: null,
+      };
+
+      let record: Record<string, any> = {};
+      for (let columnName in result.data) {
+        record[columnName] = result.data[columnName];
+      }
+      newRecordChange.recordChanges = record;
+
+      recordChanges.push(newRecordChange);
+
+      this.apiHttpService
+        .put(this.apiEndpointsService.getCodebookDataChangeEndpoint(this.codebookDetailWithData.name), recordChanges)
+        .subscribe(
+          (resp) => {
+            this.showSuccess('Record updated', `Record ${recordChanges[0].recordKey.value} was updated`);
+            log.debug('onEdit: ', recordChanges[0].recordKey.value);
+          },
+          (error) => {
+            this.showError('Update failed', `Update of record failed with error ${error.message} ${error.error.title}`);
+            log.debug('onEdit: ', error);
+          }
+        );
+    });
   }
 
   removeRecord() {
@@ -190,7 +333,7 @@ export class CodebooksComponent implements OnInit {
           let keyColumnName = this.getKeyColumnName();
 
           if (!keyColumnName) {
-            this.showError('Delete failed', `Cannot fing primary key column`);
+            this.showError('Delete failed', `Cannot find primary key column`);
 
             return;
           }
@@ -211,15 +354,16 @@ export class CodebooksComponent implements OnInit {
             )
             .subscribe(
               (resp) => {
+                let deletedRows: number = this.selection.selected.length;
                 this.selection.selected.forEach(function (record: any) {
                   let index: number = this.codebookDetailWithData.data.findIndex((d: any) => d === record);
                   this.codebookDetailWithData.data.splice(index, 1);
                 }, this);
 
                 this.codebookdataSource.data = this.codebookDetailWithData.data;
-                this.showSuccess('Records deleted', `${this.selection.selected.length} record(s) were deleted`);
-                log.debug('onDelete: ', this.selection.selected.length);
                 this.selection.clear();
+                this.showSuccess('Records deleted', `${deletedRows} record(s) were deleted`);
+                log.debug('onDelete: ', deletedRows);
               },
               (error) => {
                 this.showError(
