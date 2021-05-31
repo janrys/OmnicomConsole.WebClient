@@ -87,6 +87,26 @@ export class UserService {
       this.applicationMetadata = this.getApplicationMetadata();
     }
 
+    if (!this.cachedApplicationMetadata) {
+      return true;
+    }
+
     return this.cachedApplicationMetadata.mode === 'read_only';
+  }
+
+  getIsReader(): boolean {
+    return this.cachedUser.roles.includes('reader');
+  }
+
+  getIsEditor(): boolean {
+    return this.cachedUser.roles.includes('editor');
+  }
+
+  getIsAdmin(): boolean {
+    return this.cachedUser.roles.includes('sysadmin');
+  }
+
+  getCanEditCodebooks(): boolean {
+    return this.getIsEditor() || this.getIsAdmin();
   }
 }

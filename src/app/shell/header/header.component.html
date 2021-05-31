@@ -1,6 +1,9 @@
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/" translate>APP_NAME</a>
+    <a class="navbar-brand" href="/" translate
+      >APP_NAME <i *ngIf="userService.getIsReadOnlyMode()" class="fa fa-lock" title="read-only"></i
+    ></a>
+
     <button
       class="navbar-toggler"
       type="button"
@@ -44,7 +47,16 @@
       </div>
 
       <div class="navbar-nav ml-auto">
-        <div class="navbar-text text-muted" *ngIf="currentUser">{{ currentUser.name }}</div>
+        <div class="navbar-text text-muted" *ngIf="currentUser">
+          {{ currentUser.name }}
+          <i
+            *ngIf="userService.getIsReader() && !userService.getIsEditor() && !userService.getIsAdmin()"
+            class="fa fa-user-lock"
+            title="reader"
+          ></i>
+          <i *ngIf="userService.getIsEditor() && !userService.getIsAdmin()" class="fa fa-user-edit" title="editor"></i>
+          <i *ngIf="userService.getIsAdmin()" class="fa fa-user-cog" title="admin"></i>
+        </div>
         <a *ngIf="!currentUser" class="btn btn-primary" (click)="login()"><i class="fa fa-user"></i> Login</a>
         <!-- <app-language-selector inNavbar="true" menuClass="dropdown-menu dropdown-menu-right"></app-language-selector> -->
       </div>

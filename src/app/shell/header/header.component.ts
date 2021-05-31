@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
   menuHidden = true;
   currentUser: UserMe;
 
-  constructor(private userService: UserService) {}
+  constructor(public userService: UserService) {}
 
   ngOnInit() {
     this.userService.getMe().subscribe(
