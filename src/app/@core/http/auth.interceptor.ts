@@ -3,14 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../services/auth-service';
 import { filter, take, switchMap, catchError } from 'rxjs/operators';
-import { UserService } from '../../services/user-service';
 import { throwError } from 'rxjs';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private accessToken: string;
 
-  constructor(public authService: AuthService, private userService: UserService) {}
+  constructor(public authService: AuthService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     this.accessToken = this.authService.token;

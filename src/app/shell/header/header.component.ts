@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Logger } from '../../@core/logger.service';
 import { UserMe } from '@app/@shared/models/UserMe';
 import { UserService } from '@app/services/user-service';
+
+const log = new Logger('HeaderComponent');
 
 @Component({
   selector: 'app-header',
@@ -14,9 +17,14 @@ export class HeaderComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit() {
-    this.userService.getMe().subscribe((data) => {
-      this.currentUser = data as UserMe;
-    });
+    this.userService.getMe().subscribe(
+      (user) => {
+        this.currentUser = user;
+      },
+      (error) => {
+        log.debug(error);
+      }
+    );
   }
 
   toggleMenu() {
@@ -24,8 +32,13 @@ export class HeaderComponent implements OnInit {
   }
 
   login() {
-    this.userService.getMe().subscribe((data) => {
-      this.currentUser = data as UserMe;
-    });
+    this.userService.getMe().subscribe(
+      (user) => {
+        this.currentUser = user;
+      },
+      (error) => {
+        log.debug(error);
+      }
+    );
   }
 }

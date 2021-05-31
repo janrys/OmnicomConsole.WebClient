@@ -3,7 +3,7 @@ import { ApiHttpService } from '@app/services/api-http.service';
 import { ApiEndpointsService } from '@app/services/api-endpoints.service';
 import { ConfirmationDialogService } from '@app/services/confirmation-dialog.service';
 import { ToastService } from '@app/services/toast.service';
-import { Logger } from '@core';
+import { Logger } from '../@core/logger.service';
 import { Release } from '@app/@shared/models/release';
 import { ReleaseRequest } from '@app/@shared/models/releaseRequest';
 import { MatDialog } from '@angular/material/dialog';

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { ApiHttpService } from '@app/services/api-http.service';
 import { ApiEndpointsService } from '@app/services/api-endpoints.service';
-import { Logger } from '@core';
+import { Logger } from '../@core/logger.service';
 import { Codebook } from '@shared/models/Codebook';
 import { CodebookDetailWithData } from '@app/@shared/models/codebookDetailWithData';
 import { LockState } from '@app/@shared/models/lockState';
@@ -64,23 +64,28 @@ export class CodebooksComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpointWithRds(this.showRds)).subscribe(
-      (resp) => {
-        this.codeboooks = resp;
+    this.userService.getMe().subscribe(
+      (user) => {
+        this.currentUser = user;
       },
       (error) => {
         log.debug(error);
       }
     );
 
-    this.userService.getMe().subscribe((data) => {
-      this.currentUser = data as UserMe;
-    });
-
     this.apiHttpService.get(this.apiEndpointsService.getMetadataEndpoint()).subscribe(
       (resp) => {
         this.applicationMetadata = resp;
         this.isReadOnly = this.applicationMetadata.mode === 'read_only';
+      },
+      (error) => {
+        log.debug(error);
+      }
+    );
+
+    this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpointWithRds(this.showRds)).subscribe(
+      (resp) => {
+        this.codeboooks = resp;
       },
       (error) => {
         log.debug(error);

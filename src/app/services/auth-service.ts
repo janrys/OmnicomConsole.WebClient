@@ -1,7 +1,5 @@
 // Angular Modules
 import { Injectable } from '@angular/core';
-import { ApiHttpService } from './api-http.service';
-import { ApiEndpointsService } from './api-endpoints.service';
 import { UserService } from './user-service';
 import { UserMe } from '@app/@shared/models/UserMe';
 import { UserAcessToken } from '@app/@shared/models/userAcessToken';
@@ -11,11 +9,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(
-    private apiHttpService: ApiHttpService,
-    private apiEndpointsService: ApiEndpointsService,
-    private userService: UserService
-  ) {}
+  constructor(private userService: UserService) {}
 
   private readonly TOKEN = 'token.token';
   private readonly TOKEN_EXPIRATION = 'token.expiration';
@@ -76,9 +70,10 @@ export class AuthService {
   }
 
   async getMe() {
-    return await this.userService.getMe().subscribe(
+    return await this.userService.getMeForceRefresh().subscribe(
       (data) => {
         this.me = data as UserMe;
+        this.userService.setMe(this.me);
       },
       (error) => {
         if (error.status === 401) {
