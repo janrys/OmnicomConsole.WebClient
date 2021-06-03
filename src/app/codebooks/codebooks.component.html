@@ -40,7 +40,7 @@
         >
       </div>
 
-      <div class="float-right" *ngIf="!isReadOnly && codebookDetailWithData">
+      <div class="float-right" *ngIf="lockState.isLocked && !isReadOnly && codebookDetailWithData">
         <button
           type="button"
           class="btn btn-primary"

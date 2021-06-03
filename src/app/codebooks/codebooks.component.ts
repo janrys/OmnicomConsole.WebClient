@@ -118,7 +118,7 @@ export class CodebooksComponent implements OnInit {
         this.columns = Object.keys(this.codebookDetailWithData.data[0]);
         this.displayColumns = Object.keys(this.codebookDetailWithData.data[0]);
 
-        if (!this.isReadOnly && this.codebookDetailWithData.isEditable) {
+        if (!this.isReadOnly && this.codebookDetailWithData.isEditable && this.lockState.isLocked) {
           this.displayColumns.unshift('select');
         }
       },
@@ -143,6 +143,11 @@ export class CodebooksComponent implements OnInit {
     this.apiHttpService.post(this.apiEndpointsService.createLockEndpoint(), []).subscribe(
       (resp) => {
         this.lockState = resp;
+
+        if (!this.isReadOnly && this.codebookDetailWithData.isEditable && !this.displayColumns.includes('select')) {
+          this.displayColumns.unshift('select');
+        }
+
         this.showSuccess(
           'Lock created',
           `Lock created for current user ${resp.forUserName} for release id ${resp.forReleaseId}`
@@ -159,6 +164,14 @@ export class CodebooksComponent implements OnInit {
     this.apiHttpService.delete(this.apiEndpointsService.releaseLockEndpoint()).subscribe(
       (resp) => {
         this.lockState = resp;
+
+        if (this.displayColumns.includes('select')) {
+          this.displayColumns.splice(
+            this.displayColumns.findIndex((c) => c === 'select'),
+            1
+          );
+        }
+
         this.showSuccess('Lock released', `Lock has been released`);
       },
       (error) => {
