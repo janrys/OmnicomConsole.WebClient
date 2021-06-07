@@ -58,7 +58,7 @@ export class AppComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe((event) => {
-        const title = event.title;
+        const title = event.title + ' - Printnet Codebook Console';
         if (title) {
           this.titleService.setTitle(this.translateService.instant(title));
         }

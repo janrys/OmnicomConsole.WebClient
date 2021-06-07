@@ -16,6 +16,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 
 import { environment } from '@env/environment';
 import { CoreModule } from '@core';
@@ -28,6 +29,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { DialogNewRelease } from './release/dialog-new-release.component';
 import { DialogNewRequest } from './release/dialog-new-request.component';
 import { DialogNewcodebookData } from './codebooks/dialog-new-codebook-data.component';
+import { DialogCreateLock } from './codebooks/dialog-create-lock.component';
 
 @NgModule({
   imports: [
@@ -47,6 +49,7 @@ import { DialogNewcodebookData } from './codebooks/dialog-new-codebook-data.comp
     MatIconModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     CoreModule,
     SharedModule,
     ShellModule,
@@ -55,8 +58,8 @@ import { DialogNewcodebookData } from './codebooks/dialog-new-codebook-data.comp
     CodebooksModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
-  declarations: [AppComponent, DialogNewRelease, DialogNewRequest, DialogNewcodebookData],
-  entryComponents: [DialogNewRelease, DialogNewRequest, DialogNewcodebookData],
+  declarations: [AppComponent, DialogNewRelease, DialogNewRequest, DialogNewcodebookData, DialogCreateLock],
+  entryComponents: [DialogNewRelease, DialogNewRequest, DialogNewcodebookData, DialogCreateLock],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent],
 })

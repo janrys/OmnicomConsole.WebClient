@@ -24,7 +24,7 @@
       </div>
 
       <div class="form-check ml-6" *ngIf="!isReadOnly">
-        <a *ngIf="!lockState.isLocked" class="btn btn-outline-secondary ml-5" (click)="createLock()"
+        <a *ngIf="!lockState.isLocked" class="btn btn-outline-secondary ml-5" (click)="createLockDialog()"
           ><i class="fa fa-lock-open"></i> Unlocked</a
         >
         <a

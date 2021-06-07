@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '@app/services/user-service';
 
 @Component({
   selector: 'app-export',
@@ -6,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./export.component.scss'],
 })
 export class ExportComponent implements OnInit {
-  constructor() {}
+  isExportAllowed: boolean;
 
-  ngOnInit(): void {}
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.isExportAllowed = this.userService.getIsExportAllowed();
+  }
 }

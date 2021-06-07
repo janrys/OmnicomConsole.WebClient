@@ -3,5 +3,5 @@ export interface LockState {
   forUserId: string;
   forUserName: string;
   created: Date;
-  forReleaseId: number;
+  forRequestId: number;
 }

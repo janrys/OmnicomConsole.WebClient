@@ -66,7 +66,12 @@ export class ApiEndpointsService {
 
   // lock
   public getLockStateEndpoint = (): string => this.createUrl('Codebooks/lock');
-  public createLockEndpoint = (): string => this.createUrl('Codebooks/lock');
+  public createLockEndpoint(requestId: number): string {
+    return this.createUrlWithQueryParameters('Codebooks/lock', (qs: QueryStringParameters) => {
+      qs.push('requestId', requestId);
+    });
+  }
+
   public releaseLockEndpoint = (): string => this.createUrl('Codebooks/lock');
 
   // releases

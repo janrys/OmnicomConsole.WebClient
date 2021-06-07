@@ -1,0 +1,30 @@
+﻿<h2 mat-dialog-title>Create lock</h2>
+
+<div>Select existing relase and request or <a [routerLink]="['/release']" (click)="onNoClick()">create new</a></div>
+
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Release</mat-label>
+    <mat-select formcontrolname="releaseId" (selectionChange)="onReleaseSelected($event.value)">
+      <mat-option *ngFor="let release of releases" [value]="release.id"> {{release.name}} </mat-option>
+    </mat-select></mat-form-field
+  >
+
+  <br />
+
+  <mat-form-field>
+    <mat-label>Request</mat-label>
+    <mat-select formcontrolname="requestId" (selectionChange)="onRequestSelected($event.value)">
+      <mat-option *ngFor="let request of requests" [value]="request.id">
+        {{request.name}} {{request.description}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <br />
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="selectedRequest" cdkFocusInitial>Create lock</button>
+  </div>
+</div>

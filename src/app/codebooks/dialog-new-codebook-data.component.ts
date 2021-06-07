@@ -28,4 +28,21 @@ export class DialogNewcodebookData implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+  getInputType(columnType: string): string {
+    if (
+      columnType.includes('int') ||
+      columnType.includes('decimal') ||
+      columnType.includes('bit') ||
+      columnType.includes('numeric') ||
+      columnType.includes('float') ||
+      columnType.includes('real')
+    ) {
+      return 'number';
+    } else if (columnType.includes('date')) {
+      return 'datetime-local';
+    }
+
+    return 'text';
+  }
 }

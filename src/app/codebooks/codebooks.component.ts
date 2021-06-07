@@ -19,6 +19,8 @@ import { RecordChange } from '@app/@shared/models/recordChange';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { DialogNewcodebookDataModel } from './DialogNewcodebookDataModel';
 import { DialogNewcodebookData } from './dialog-new-codebook-data.component';
+import { DialogCreateLock } from './dialog-create-lock.component';
+import { ReleaseRequest } from '@app/@shared/models/releaseRequest';
 
 const log = new Logger('Codebooks');
 
@@ -34,7 +36,7 @@ export class CodebooksComponent implements OnInit {
   selection = new SelectionModel<any>(true, []);
   columns: string[];
   displayColumns: string[];
-  lockState: LockState = { isLocked: true, forUserId: '', forUserName: '', created: new Date(), forReleaseId: 0 };
+  lockState: LockState = { isLocked: true, forUserId: '', forUserName: '', created: new Date(), forRequestId: 0 };
   modela = 1;
   showRds: boolean = false;
   currentUser: UserMe = {
@@ -73,15 +75,7 @@ export class CodebooksComponent implements OnInit {
       }
     );
 
-    this.apiHttpService.get(this.apiEndpointsService.getMetadataEndpoint()).subscribe(
-      (resp) => {
-        this.applicationMetadata = resp;
-        this.isReadOnly = this.applicationMetadata.mode === 'read_only';
-      },
-      (error) => {
-        log.debug(error);
-      }
-    );
+    this.isReadOnly = this.userService.getIsReadOnlyMode();
 
     this.apiHttpService.get(this.apiEndpointsService.getCodebooksEndpointWithRds(this.showRds)).subscribe(
       (resp) => {
@@ -109,7 +103,10 @@ export class CodebooksComponent implements OnInit {
   onCodebookSelected(e: Event) {
     let element = e.target as HTMLSelectElement;
     let codebookName: string = element.value;
+    this.refreshCodebookData(codebookName);
+  }
 
+  refreshCodebookData(codebookName: string) {
     this.apiHttpService.get(this.apiEndpointsService.getCodebookData(codebookName)).subscribe(
       (resp) => {
         this.codebookDetailWithData = resp;
@@ -139,8 +136,22 @@ export class CodebooksComponent implements OnInit {
     );
   }
 
-  createLock() {
-    this.apiHttpService.post(this.apiEndpointsService.createLockEndpoint(), []).subscribe(
+  createLockDialog() {
+    let dialogRef = this.dialog.open(DialogCreateLock, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe((result: ReleaseRequest) => {
+      if (!result) {
+        return;
+      }
+
+      this.createLock(result.id);
+    });
+  }
+
+  createLock(requestId: number) {
+    this.apiHttpService.post(this.apiEndpointsService.createLockEndpoint(requestId), []).subscribe(
       (resp) => {
         this.lockState = resp;
 
@@ -150,7 +161,7 @@ export class CodebooksComponent implements OnInit {
 
         this.showSuccess(
           'Lock created',
-          `Lock created for current user ${resp.forUserName} for release id ${resp.forReleaseId}`
+          `Lock created for current user ${resp.forUserName} for request id ${resp.forRequestId}`
         );
       },
       (error) => {
@@ -271,6 +282,7 @@ export class CodebooksComponent implements OnInit {
         .put(this.apiEndpointsService.getCodebookDataChangeEndpoint(this.codebookDetailWithData.name), recordChanges)
         .subscribe(
           (resp) => {
+            this.refreshCodebookData(this.codebookDetailWithData.name);
             this.showSuccess('Record inserted', `Record was inserted`);
             log.debug('onInsert: ');
           },

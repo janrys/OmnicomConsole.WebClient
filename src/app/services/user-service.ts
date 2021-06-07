@@ -94,6 +94,30 @@ export class UserService {
     return this.cachedApplicationMetadata.mode === 'read_only';
   }
 
+  getIsImportAllowed(): boolean {
+    if (!this.applicationMetadata) {
+      this.applicationMetadata = this.getApplicationMetadata();
+    }
+
+    if (!this.cachedApplicationMetadata) {
+      return true;
+    }
+
+    return this.cachedApplicationMetadata.isImportAllowed;
+  }
+
+  getIsExportAllowed(): boolean {
+    if (!this.applicationMetadata) {
+      this.applicationMetadata = this.getApplicationMetadata();
+    }
+
+    if (!this.cachedApplicationMetadata) {
+      return true;
+    }
+
+    return this.cachedApplicationMetadata.isExportAllowed;
+  }
+
   getIsReader(): boolean {
     return this.cachedUser.roles.includes('reader');
   }

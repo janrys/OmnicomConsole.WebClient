@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '@app/services/user-service';
 
 @Component({
   selector: 'app-import',
@@ -6,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./import.component.scss'],
 })
 export class ImportComponent implements OnInit {
-  constructor() {}
+  isImportAllowed: boolean;
 
-  ngOnInit(): void {}
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.isImportAllowed = this.userService.getIsImportAllowed();
+  }
 }

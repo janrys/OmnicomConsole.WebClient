@@ -9,9 +9,15 @@
       [(ngModel)]="dialogModel.data[column.name]"
       ngDefaultControl
       [name]="column.name"
+      [maxlength]="column.maximumLength === 0 ? null : column.maximumLength"
+      [type]="getInputType(column.dataType)"
+      [required]="column.isNullable ? null : true"
       [disabled]="column.isIdentity"
     />
-    <mat-hint>{{column.dataType}} {{column.maximumLength}}</mat-hint>
+    <mat-hint
+      >{{column.dataType}} {{(column.maximumLength === 0 ? "" : column.maximumLength)}} {{(column.isNullable ? null :
+      "*")}}</mat-hint
+    >
   </mat-form-field>
 </div>
 

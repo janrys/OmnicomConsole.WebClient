@@ -88,6 +88,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
       this.apiHttpService.post(this.apiEndpointsService.postReleaseEndpoint(), result).subscribe(
         (resp) => {
           this.releases.push(resp);
@@ -110,6 +114,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
       this.apiHttpService.put(this.apiEndpointsService.putReleaseEndpoint(), result).subscribe(
         (resp) => {
           var index = this.releases.findIndex((x) => x.id == resp.id);
@@ -172,6 +180,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
       this.apiHttpService.post(this.apiEndpointsService.postRequestEndpoint(), result).subscribe(
         (resp) => {
           this.requests.push(resp);
@@ -196,6 +208,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
       this.apiHttpService.put(this.apiEndpointsService.putRequestEndpoint(), result).subscribe(
         (resp) => {
           var index = this.requests.findIndex((x) => x.id == resp.id);
