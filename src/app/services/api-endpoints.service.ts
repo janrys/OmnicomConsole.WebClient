@@ -89,6 +89,9 @@ export class ApiEndpointsService {
   public deleteRequestByIdEndpoint = (id: number): string =>
     this.createUrlWithPathVariables('Releases', ['requests', id]);
 
+  public getLastPackageEndpoint = (): string => this.createUrl('Releases/lastpackage');
+  public postImportPackageEndpoint = (): string => this.createUrl('Releases/requests/import');
+
   // users
   public getUserLoginEndpoint = (): string => this.createUrl('Users/login');
   public getUserMeEndpoint = (): string => this.createUrl('Users/me');

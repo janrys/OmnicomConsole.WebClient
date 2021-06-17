@@ -1,2 +1,16 @@
-<p *ngIf="isImportAllowed">import works!</p>
-<p *ngIf="!isImportAllowed">import is now allowed in this environment</p>
+<p *ngIf="!isImportAllowed">Import is now allowed in this environment</p>
+
+<div *ngIf="isImportAllowed">
+  <p>
+    Aktuální sekvence balíčku <b class="alert alert-primary" role="alert">{{ lastPackage.packageNumber }}</b>
+  </p>
+
+  <div class="form-group">
+    <label for="file">Výběr balíčku k importu</label>
+    <input type="file" id="file" class="file-upload" (change)="handleFileInput($event.target.files)" />
+  </div>
+
+  <button type="button" class="btn btn-primary" (click)="postFile()" [ngClass]="{ disabled: !fileToUpload }">
+    Import
+  </button>
+</div>
