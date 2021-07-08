@@ -1,2 +1,99 @@
-<p *ngIf="isExportAllowed">export works!</p>
-<p *ngIf="!isExportAllowed">export is now allowed in this environment</p>
+<p *ngIf="!isExportAllowed">Export není povolen v tomto prostředí</p>
+
+<div class="container-fluid" *ngIf="isExportAllowed">
+  <div class="card">
+    <div class="card-header">
+      <div class="float-left">
+        <h3 class="text-info">Release</h3>
+      </div>
+
+      <select
+        class="form-select"
+        aria-label="Release select"
+        (change)="onReleaseSelected(selectElem.value)"
+        name="releasesSelect"
+        #selectElem
+      >
+        <option selected disabled [value]="null">Vyberte release</option>
+        <option *ngFor="let release of releases" [value]="release.id">
+          {{ release.name }}
+        </option>
+      </select>
+
+      <section>
+        <mat-checkbox
+          [(ngModel)]="showJustApprovedRequests"
+          name="chkboxShowApprovedRequests"
+          (change)="onShowApprovedRequests($event)"
+        >
+          Zobraz schválené</mat-checkbox
+        >
+      </section>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive-sm" *ngIf="requests && requests?.length != 0">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="export()"
+          [ngClass]="{ disabled: this.selection.selected.length === 0 }"
+        >
+          <i class="fa fa-plus"></i> Export
+        </button>
+
+        <table mat-table [dataSource]="requestsdataSource" matSort class="mat-elevation-z8">
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+              >
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)"
+              >
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef><span mat-sort-header>Id</span></th>
+            <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="sequenceNumber">
+            <th mat-header-cell *matHeaderCellDef>Sequence</th>
+            <td mat-cell *matCellDef="let element">{{ element.sequenceNumber }}</td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="requestDisplayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let request; columns: requestDisplayedColumns"
+            (click)="selection.toggle(request)"
+          ></tr>
+        </table>
+      </div>
+
+      <br />
+      <p *ngIf="!requests || requests?.length === 0">Žádné requesty nejsou založené pro tento release</p>
+    </div>
+  </div>
+</div>

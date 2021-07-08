@@ -57,33 +57,15 @@ export class ImportComponent implements OnInit {
       .post(this.apiEndpointsService.postImportPackageEndpoint(), formData, { headers: headers })
       .subscribe(
         (resp) => {
-          this.showSuccess('Package uploaded', `Package ${this.fileToUpload.name} was uploaded`);
+          this.toastService.showSuccess('Package uploaded', `Package ${this.fileToUpload.name} was uploaded`);
         },
         (error) => {
-          this.showError(
+          this.toastService.showError(
             'Package upload failed',
             `Package upload failed with error ${error.message} ${error.error?.title ?? ''}`
           );
           log.debug(error);
         }
       );
-  }
-
-  showSuccess(headerText: string, bodyText: string) {
-    this.toastService.show(bodyText, {
-      classname: 'bg-success text-light',
-      delay: 2000,
-      autohide: true,
-      headertext: headerText,
-    });
-  }
-
-  showError(headerText: string, bodyText: string) {
-    this.toastService.show(bodyText, {
-      classname: 'bg-danger text-light',
-      delay: 2000,
-      autohide: true,
-      headertext: headerText,
-    });
   }
 }

@@ -1,5 +1,5 @@
-﻿<h2 mat-dialog-title *ngIf="dialogModel.isNewRecord">New record</h2>
-<h2 mat-dialog-title *ngIf="!dialogModel.isNewRecord">Edit record</h2>
+﻿<h2 mat-dialog-title *ngIf="dialogModel.isNewRecord">Nový záznam</h2>
+<h2 mat-dialog-title *ngIf="!dialogModel.isNewRecord">Upravit záznam</h2>
 
 <div mat-dialog-content>
   <mat-form-field *ngFor="let column of dialogModel.columns">
@@ -22,6 +22,6 @@
 </div>
 
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button [mat-dialog-close]="dialogModel" cdkFocusInitial>Save</button>
+  <button mat-button (click)="onNoClick()">Zrušit</button>
+  <button mat-button [mat-dialog-close]="dialogModel" cdkFocusInitial>Uložit</button>
 </div>

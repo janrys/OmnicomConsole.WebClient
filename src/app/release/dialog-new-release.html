@@ -1,4 +1,4 @@
-﻿<h2 mat-dialog-title>New release</h2>
+﻿<h2 mat-dialog-title>Nový release</h2>
 
 <div mat-dialog-content>
   <mat-form-field>
@@ -8,15 +8,15 @@
     <!--  <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error> -->
   </mat-form-field>
   <mat-form-field>
-    <label mat-label>Name</label>
+    <label mat-label>Název</label>
     <input matInput [(ngModel)]="data.name" placeholder="name" ngDefaultControl name="name" />
   </mat-form-field>
   <mat-form-field>
-    <label mat-label>Date</label>
+    <label mat-label>Datum</label>
     <input matInput [(ngModel)]="data.date" placeholder="date" ngDefaultControl name="date" />
   </mat-form-field>
   <mat-form-field>
-    <label mat-label>Version</label>
+    <label mat-label>Verze</label>
     <input matInput [(ngModel)]="data.version" placeholder="version" ngDefaultControl name="version" />
   </mat-form-field>
   <mat-form-field>
@@ -25,6 +25,6 @@
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Add</button>
+  <button mat-button (click)="onNoClick()">Zrušit</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Uložit</button>
 </div>

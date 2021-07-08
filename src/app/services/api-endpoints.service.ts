@@ -80,6 +80,14 @@ export class ApiEndpointsService {
   public getRequestData = (releaseId: number): string =>
     this.createUrlWithPathVariables('Releases', [releaseId, 'requests']);
 
+  public getRequestWithStatusData = (releaseIds: number[], releaseRequestStatus: string): string =>
+    this.createUrlWithQueryParameters('Releases/requests', (qs: QueryStringParameters) => {
+      releaseIds.forEach((id) => {
+        qs.push('releaseIds', id);
+      });
+      qs.push('state', releaseRequestStatus);
+    });
+
   public postReleaseEndpoint = (): string => this.createUrl('Releases');
   public putReleaseEndpoint = (): string => this.createUrl('Releases');
   public deleteReleaseByIdEndpoint = (id: number): string => this.createUrlWithPathVariables('Releases', [id]);
@@ -91,6 +99,7 @@ export class ApiEndpointsService {
 
   public getLastPackageEndpoint = (): string => this.createUrl('Releases/lastpackage');
   public postImportPackageEndpoint = (): string => this.createUrl('Releases/requests/import');
+  public getExportPackageEndpoint = (): string => this.createUrl('Releases/requests/export');
 
   // users
   public getUserLoginEndpoint = (): string => this.createUrl('Users/login');
@@ -139,15 +148,15 @@ export class ApiEndpointsService {
     queryStringHandler?: (queryStringParameters: QueryStringParameters) => void
   ): string {
     const urlBuilder: UrlBuilder = new UrlBuilder(this.constants.Api_Endpoint, action);
-    // Push extra query string params
-    if (queryStringHandler) {
-      queryStringHandler(urlBuilder.queryString);
-    }
-    return urlBuilder.toString();
+    return this.addQueryParams(urlBuilder, queryStringHandler);
   }
 
   // URL WITH PATH VARIABLES
   private createUrlWithPathVariables(action: string, pathVariables: any[] = []): string {
+    return this.createUrlBuilderWithPathVariables(action, pathVariables).toString();
+  }
+
+  private createUrlBuilderWithPathVariables(action: string, pathVariables: any[] = []): UrlBuilder {
     let encodedPathVariablesUrl: string = '';
     // Push extra path variables
     for (const pathVariable of pathVariables) {
@@ -155,8 +164,28 @@ export class ApiEndpointsService {
         encodedPathVariablesUrl += `/${encodeURIComponent(pathVariable.toString())}`;
       }
     }
-    const urlBuilder: UrlBuilder = new UrlBuilder(this.constants.Api_Endpoint, `${action}${encodedPathVariablesUrl}`);
+    return new UrlBuilder(this.constants.Api_Endpoint, `${action}${encodedPathVariablesUrl}`);
+  }
+
+  private createUrlWithPathVariablesAndQueryParameters(
+    action: string,
+    pathVariables: any[] = [],
+    queryStringHandler?: (queryStringParameters: QueryStringParameters) => void
+  ): string {
+    const urlBuilder: UrlBuilder = this.createUrlBuilderWithPathVariables(action, pathVariables);
+    return this.addQueryParams(urlBuilder, queryStringHandler);
+  }
+
+  private addQueryParams(
+    urlBuilder: UrlBuilder,
+    queryStringHandler?: (queryStringParameters: QueryStringParameters) => void
+  ): string {
+    // Push extra query string params
+    if (queryStringHandler) {
+      queryStringHandler(urlBuilder.queryString);
+    }
     return urlBuilder.toString();
   }
+
   /* #endregion */
 }

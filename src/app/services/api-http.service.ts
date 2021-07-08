@@ -20,4 +20,7 @@ export class ApiHttpService {
   public put = (url: string, data: any, options?: any): Observable<any> => this.http.put(url, data, options);
 
   public delete = (url: string, options?: any): Observable<any> => this.http.delete(url, options);
+
+  public postDownloadFile = (url: string, data: any): Observable<any> =>
+    this.http.post(url, data, { responseType: 'blob', observe: 'response' });
 }

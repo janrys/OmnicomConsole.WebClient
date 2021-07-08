@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/da1dd62b-3f8e-40f4-855a-5e0f2aa2d012/resourceGroups/pnt-20-test-comp-rg/providers/Microsoft.Web/sites/pnt-20-test-codebooks-ws",
+  "appService.deploySubpath": "dist"
+}

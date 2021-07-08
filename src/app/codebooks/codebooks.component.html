@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-header">
       <div class="float-left">
-        <h3 class="text-info">Codebooks</h3>
+        <h3 class="text-info">Editace číselníků</h3>
 
         <select
           class="form-select"
@@ -10,7 +10,7 @@
           (change)="onCodebookSelected($event)"
           name="codebooksSelect"
         >
-          <option selected disabled [value]="null">Select codebook name</option>
+          <option selected disabled [value]="null">Vyberte číselník</option>
           <option *ngFor="let codebook of codeboooks" [value]="encodeSpecialCharacters(codebook.fullName)">
             {{ codebook.name }}
           </option>
@@ -18,25 +18,25 @@
 
         <section>
           <mat-checkbox [(ngModel)]="showRds" name="chkboxShowRds" (change)="onShowRdsChange($event)">
-            Show RDS codebooks</mat-checkbox
+            Ukázat RDS číselníky</mat-checkbox
           >
         </section>
       </div>
 
       <div class="form-check ml-6" *ngIf="!isReadOnly">
         <a *ngIf="!lockState.isLocked" class="btn btn-outline-secondary ml-5" (click)="createLockDialog()"
-          ><i class="fa fa-lock-open"></i> Unlocked</a
+          ><i class="fa fa-lock-open"></i> Odemčeno</a
         >
         <a
           *ngIf="lockState.isLocked && currentUser.identifier !== lockState.forUserId"
           class="btn btn-primary ml-5 disabled"
-          ><i class="fa fa-lock"></i> Locked for {{ lockState.forUserName }}</a
+          ><i class="fa fa-lock"></i> Uzamčeno pro {{ lockState.forUserName }}</a
         >
         <a
           *ngIf="lockState.isLocked && currentUser.identifier === lockState.forUserId"
           class="btn btn-warning ml-5"
           (click)="releaseLock()"
-          ><i class="fa fa-lock"></i> Locked</a
+          ><i class="fa fa-lock"></i> Uzamčeno</a
         >
       </div>
 

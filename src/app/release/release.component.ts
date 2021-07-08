@@ -97,10 +97,13 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           this.releases.push(resp);
           this.releasesdataSource.data = this.releases;
           this.requestsdataSource.data = this.requests;
-          this.showSuccess('Release inserted', `Release with id ${resp.id} was inserted`);
+          this.toastService.showSuccess('Release inserted', `Release with id ${resp.id} was inserted`);
         },
         (error) => {
-          this.showError('Insert failed', `Release insert failed with error ${error.message} ${error.error.title}`);
+          this.toastService.showError(
+            'Insert failed',
+            `Release insert failed with error ${error.message} ${error.error.title}`
+          );
           log.debug(error);
         }
       );
@@ -123,10 +126,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           var index = this.releases.findIndex((x) => x.id == resp.id);
           this.releases[index] = resp;
           this.releasesdataSource.data = this.releases;
-          this.showSuccess('Release updated', `Release with id ${resp.id} was updated`);
+          this.toastService.showSuccess('Release updated', `Release with id ${resp.id} was updated`);
         },
         (error) => {
-          this.showError(
+          this.toastService.showError(
             'Update failed',
             `Release update with id ${result.id} failed with error ${error.message} ${error.error.title}`
           );
@@ -146,11 +149,11 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
               var index = this.releases.findIndex((x) => x.id == id);
               this.releases.splice(index, 1);
               this.releasesdataSource.data = this.releases;
-              this.showSuccess('Release', `Release with id ${id} was deleted`);
+              this.toastService.showSuccess('Release', `Release with id ${id} was deleted`);
               log.debug('onDelete: ', id);
             },
             (error) => {
-              this.showError(
+              this.toastService.showError(
                 'Delete failed',
                 `Request delete with id ${id} failed with error ${error.message} ${error.error.title}`
               );
@@ -188,10 +191,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
         (resp) => {
           this.requests.push(resp);
           this.requestsdataSource.data = this.requests;
-          this.showSuccess('Request inserted', `Request inserted with id ${resp.id}`);
+          this.toastService.showSuccess('Request inserted', `Request inserted with id ${resp.id}`);
         },
         (error) => {
-          this.showError(
+          this.toastService.showError(
             'Insert failed',
             `Request insert with name ${result.name} failed with error ${error.message} ${error.error.title}`
           );
@@ -217,10 +220,10 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
           var index = this.requests.findIndex((x) => x.id == resp.id);
           this.requests[index] = resp;
           this.requestsdataSource.data = this.requests;
-          this.showSuccess('Request updated', `Request with id ${resp.id} was updated`);
+          this.toastService.showSuccess('Request updated', `Request with id ${resp.id} was updated`);
         },
         (error) => {
-          this.showError(
+          this.toastService.showError(
             'Update failed',
             `Request update with id ${result.id} failed with error ${error.message} ${error.error.title}`
           );
@@ -240,11 +243,11 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
               var index = this.requests.findIndex((x) => x.id == id);
               this.requests.splice(index, 1);
               this.requestsdataSource.data = this.requests;
-              this.showSuccess('Request deleted', `Request with id ${id} was deleted`);
+              this.toastService.showSuccess('Request deleted', `Request with id ${id} was deleted`);
               log.debug('onDelete: ', id);
             },
             (error) => {
-              this.showError(
+              this.toastService.showError(
                 'Delete failed',
                 `Request delete with id ${id} failed with error ${error.message} ${error.error.title}`
               );
@@ -256,23 +259,5 @@ export class ReleaseComponent implements OnInit, AfterViewInit {
       .catch(() => {
         log.debug('onDelete: ', 'Cancel');
       });
-  }
-
-  showSuccess(headerText: string, bodyText: string) {
-    this.toastService.show(bodyText, {
-      classname: 'bg-success text-light',
-      delay: 2000,
-      autohide: true,
-      headertext: headerText,
-    });
-  }
-
-  showError(headerText: string, bodyText: string) {
-    this.toastService.show(bodyText, {
-      classname: 'bg-danger text-light',
-      delay: 2000,
-      autohide: true,
-      headertext: headerText,
-    });
   }
 }

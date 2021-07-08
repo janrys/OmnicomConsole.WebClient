@@ -159,13 +159,13 @@ export class CodebooksComponent implements OnInit {
           this.displayColumns.unshift('select');
         }
 
-        this.showSuccess(
+        this.toastService.showSuccess(
           'Lock created',
           `Lock created for current user ${resp.forUserName} for request id ${resp.forRequestId}`
         );
       },
       (error) => {
-        this.showError('Lock failed', `Cannot create lock because ${error.message} ${error.error.title}`);
+        this.toastService.showError('Lock failed', `Cannot create lock because ${error.message} ${error.error.title}`);
         log.debug(error);
       }
     );
@@ -183,10 +183,13 @@ export class CodebooksComponent implements OnInit {
           );
         }
 
-        this.showSuccess('Lock released', `Lock has been released`);
+        this.toastService.showSuccess('Lock released', `Lock has been released`);
       },
       (error) => {
-        this.showError('Lock release failed', `Lock release failed because ${error.message} ${error.error.title}`);
+        this.toastService.showError(
+          'Lock release failed',
+          `Lock release failed because ${error.message} ${error.error.title}`
+        );
         log.debug(error);
       }
     );
@@ -258,7 +261,7 @@ export class CodebooksComponent implements OnInit {
       let keyColumnName = this.getKeyColumnName();
 
       if (!keyColumnName) {
-        this.showError('Insert failed', `Cannot find primary key column`);
+        this.toastService.showError('Insert failed', `Cannot find primary key column`);
 
         return;
       }
@@ -283,11 +286,14 @@ export class CodebooksComponent implements OnInit {
         .subscribe(
           (resp) => {
             this.refreshCodebookData(this.codebookDetailWithData.name);
-            this.showSuccess('Record inserted', `Record was inserted`);
+            this.toastService.showSuccess('Record inserted', `Record was inserted`);
             log.debug('onInsert: ');
           },
           (error) => {
-            this.showError('Insert failed', `Insert of record failed with error ${error.message} ${error.error.title}`);
+            this.toastService.showError(
+              'Insert failed',
+              `Insert of record failed with error ${error.message} ${error.error.title}`
+            );
             log.debug('onInsert: ', error);
           }
         );
@@ -314,7 +320,7 @@ export class CodebooksComponent implements OnInit {
       let keyColumnName = this.getKeyColumnName();
 
       if (!keyColumnName) {
-        this.showError('Update failed', `Cannot find primary key column`);
+        this.toastService.showError('Update failed', `Cannot find primary key column`);
 
         return;
       }
@@ -338,11 +344,14 @@ export class CodebooksComponent implements OnInit {
         .put(this.apiEndpointsService.getCodebookDataChangeEndpoint(this.codebookDetailWithData.name), recordChanges)
         .subscribe(
           (resp) => {
-            this.showSuccess('Record updated', `Record ${recordChanges[0].recordKey.value} was updated`);
+            this.toastService.showSuccess('Record updated', `Record ${recordChanges[0].recordKey.value} was updated`);
             log.debug('onEdit: ', recordChanges[0].recordKey.value);
           },
           (error) => {
-            this.showError('Update failed', `Update of record failed with error ${error.message} ${error.error.title}`);
+            this.toastService.showError(
+              'Update failed',
+              `Update of record failed with error ${error.message} ${error.error.title}`
+            );
             log.debug('onEdit: ', error);
           }
         );
@@ -363,7 +372,7 @@ export class CodebooksComponent implements OnInit {
           let keyColumnName = this.getKeyColumnName();
 
           if (!keyColumnName) {
-            this.showError('Delete failed', `Cannot find primary key column`);
+            this.toastService.showError('Delete failed', `Cannot find primary key column`);
 
             return;
           }
@@ -392,11 +401,11 @@ export class CodebooksComponent implements OnInit {
 
                 this.codebookdataSource.data = this.codebookDetailWithData.data;
                 this.selection.clear();
-                this.showSuccess('Records deleted', `${deletedRows} record(s) were deleted`);
+                this.toastService.showSuccess('Records deleted', `${deletedRows} record(s) were deleted`);
                 log.debug('onDelete: ', deletedRows);
               },
               (error) => {
-                this.showError(
+                this.toastService.showError(
                   'Delete failed',
                   `Deletion of records failed with error ${error.message} ${error.error.title}`
                 );
@@ -425,23 +434,5 @@ export class CodebooksComponent implements OnInit {
 
   getKeyColumnName(): string {
     return this.codebookDetailWithData.columns.find((c) => c.isPrimaryKey)?.name;
-  }
-
-  showSuccess(headerText: string, bodyText: string) {
-    this.toastService.show(bodyText, {
-      classname: 'bg-success text-light',
-      delay: 2000,
-      autohide: true,
-      headertext: headerText,
-    });
-  }
-
-  showError(headerText: string, bodyText: string) {
-    this.toastService.show(bodyText, {
-      classname: 'bg-danger text-light',
-      delay: 2000,
-      autohide: true,
-      headertext: headerText,
-    });
   }
 }

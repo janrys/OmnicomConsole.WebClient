@@ -9,7 +9,9 @@ import { env } from './.env';
 export const environment = {
   production: true,
   version: env.npm_package_version,
-  serverUrl: 'https://api.chucknorris.io',
+  serverUrl: 'https://pnt-20-test-codebooks-ws.azurewebsites.net/api/api/v1',
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US'],
+  Api_Endpoint: 'https://pnt-20-test-codebooks-ws.azurewebsites.net/api/api/v1',
+  Api_Mock_Endpoint: 'https://pnt-20-test-codebooks-ws.azurewebsites.net/api/api/v1',
 };

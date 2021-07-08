@@ -15,4 +15,22 @@ export class ToastService {
   remove(toast: any) {
     this.toasts = this.toasts.filter((t) => t !== toast);
   }
+
+  showSuccess(headerText: string, bodyText: string) {
+    this.show(bodyText, {
+      classname: 'bg-success text-light',
+      delay: 2000,
+      autohide: true,
+      headertext: headerText,
+    });
+  }
+
+  showError(headerText: string, bodyText: string) {
+    this.show(bodyText, {
+      classname: 'bg-danger text-light',
+      delay: 2000,
+      autohide: true,
+      headertext: headerText,
+    });
+  }
 }

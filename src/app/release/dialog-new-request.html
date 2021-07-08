@@ -1,4 +1,4 @@
-﻿<h2 mat-dialog-title>New request</h2>
+﻿<h2 mat-dialog-title>Nový request</h2>
 
 <div mat-dialog-content>
   <mat-form-field>
@@ -8,7 +8,7 @@
     <!--  <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error> -->
   </mat-form-field>
   <mat-form-field>
-    <label mat-label>Name</label>
+    <label mat-label>Název</label>
     <input matInput [(ngModel)]="data.name" placeholder="name" ngDefaultControl name="name" />
   </mat-form-field>
   <mat-form-field>
@@ -16,7 +16,7 @@
     <input matInput [(ngModel)]="data.releaseId" placeholder="releaseId" ngDefaultControl name="releaseId" />
   </mat-form-field>
   <mat-form-field>
-    <label mat-label>Sequence Number</label>
+    <label mat-label>Pořadové číslo</label>
     <input
       matInput
       [(ngModel)]="data.sequenceNumber"
@@ -26,7 +26,7 @@
     />
   </mat-form-field>
   <mat-form-field>
-    <label mat-label>Description</label>
+    <label mat-label>Popis</label>
     <input matInput [(ngModel)]="data.description" placeholder="description" ngDefaultControl name="description" />
   </mat-form-field>
   <mat-form-field>
@@ -35,6 +35,6 @@
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Add</button>
+  <button mat-button (click)="onNoClick()">Zrušit</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Uložit</button>
 </div>

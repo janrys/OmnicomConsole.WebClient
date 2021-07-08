@@ -8,6 +8,8 @@ import { DataTablesModule } from 'angular-datatables';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { ExportComponent } from './export.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 
 //import { ToastComponent } from '@shared/toast/toast.component';
 //import { ToastsContainer } from './toasts-container.component';
@@ -21,6 +23,8 @@ import { ExportComponent } from './export.component';
     DataTablesModule,
     FormsModule,
     MatTableModule,
+    MatCheckboxModule,
+    MatSelectModule,
   ],
   declarations: [ExportComponent],
 })
