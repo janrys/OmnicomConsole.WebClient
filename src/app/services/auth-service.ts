@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { UserService } from './user-service';
 import { UserMe } from '@app/@shared/models/UserMe';
 import { UserAcessToken } from '@app/@shared/models/userAcessToken';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,28 +13,32 @@ export class AuthService {
 
   private readonly TOKEN = 'token.token';
   private readonly TOKEN_EXPIRATION = 'token.expiration';
-  public token: string;
+  private token: string;
   public expiration: Date;
   public me: UserMe;
   public isAuthorized = false;
+  private isAuthorizecComplete: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private isFirstAuthorized = false;
   public refreshTokenInProgress = false;
   public refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  auth(): Promise<any> {
+  async auth(): Promise<any> {
     const url = new URL(window.location.href); // DO NOT use ActivatedRoute because observation
     const code = url.searchParams.get('code');
     const token = localStorage.getItem(this.TOKEN);
     this.isAuthorized = false;
+    this.isAuthorizecComplete.next(false);
 
     if ((code === '' || code == null) && (token === '' || token == null)) {
       this.userService.logIn();
       this.isFirstAuthorized = true;
       this.isAuthorized = true;
     }
+
     if (!this.isFirstAuthorized) {
       if (token === '' || token == null) {
         this.getTokenFromApi(code);
+        await this.isAuthorizecComplete.toPromise();
       } else {
         this.getToken();
         this.setToken();
@@ -53,12 +57,23 @@ export class AuthService {
     });
   }
 
-  async getTokenFromApi(code: string) {
-    return await this.userService.getToken(code).subscribe((data) => {
+  /* async getTokenFromApi(code: string) {
+    var data  = await this.userService.getToken(code).toPromise();
+    const tokenData = data as UserAcessToken;
+    this.saveToken(tokenData);
+    this.getMe();
+    this.isAuthorized = true;
+    this.isAuthorizecComplete = new Observable((observer) => observer.next(true));
+  } */
+
+  getTokenFromApi(code: string) {
+    return this.userService.getToken(code).subscribe((data) => {
+      //debugger;
       const tokenData = data as UserAcessToken;
       this.saveToken(tokenData);
       this.getMe();
       this.isAuthorized = true;
+      this.isAuthorizecComplete.next(true);
     });
   }
 
@@ -66,6 +81,7 @@ export class AuthService {
     this.clearToken();
     this.me = null;
     this.isAuthorized = false;
+    this.isAuthorizecComplete.next(false);
     this.userService.logOut();
   }
 
@@ -87,9 +103,13 @@ export class AuthService {
     );
   }
 
-  getToken() {
+  getToken(isRefresh: boolean = false) {
     if (this.token == null) {
       return;
+    }
+
+    if (isRefresh) {
+      return this.token;
     }
 
     const dt = new Date(Date.now());
@@ -97,6 +117,7 @@ export class AuthService {
     if (dt.valueOf() >= this.expiration.valueOf()) {
       this.refreshTokenFromApi();
     }
+
     return this.token;
   }
 
@@ -106,8 +127,11 @@ export class AuthService {
   }
 
   async refreshTokenFromApi() {
+    //debugger;
+    this.refreshTokenInProgress = true;
     return await this.userService.getRefreshToken().subscribe(
       (data) => {
+        //debugger;
         const tokenData = data as UserAcessToken;
         this.saveToken(tokenData);
         this.getMe();
@@ -119,7 +143,12 @@ export class AuthService {
         if (error.status === 401) {
           // TODO: Prevent infinity lopp
           this.isAuthorized = false;
-          // In case of token refresh disability, try to login directly by AD
+          this.clearToken();
+          this.userService.logIn();
+        }
+        if (error.status === 500) {
+          // TODO: Prevent infinity lopp
+          this.isAuthorized = false;
           this.clearToken();
           this.userService.logIn();
         }
@@ -128,6 +157,7 @@ export class AuthService {
   }
 
   clearToken() {
+    //debugger;
     this.token = null;
     this.expiration = null;
 
@@ -141,5 +171,9 @@ export class AuthService {
 
     localStorage.setItem(this.TOKEN, this.token);
     localStorage.setItem(this.TOKEN_EXPIRATION, this.expiration.toString());
+  }
+
+  isAuthorizatedOk(): Observable<boolean> {
+    return this.isAuthorizecComplete;
   }
 }

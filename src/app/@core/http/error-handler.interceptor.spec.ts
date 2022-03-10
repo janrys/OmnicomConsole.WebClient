@@ -4,6 +4,12 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 
 import { ErrorHandlerInterceptor } from './error-handler.interceptor';
+import { AuthService } from '@app/services/auth-service';
+import { UserService } from '@app/services/user-service';
+import { ApiHttpService } from '@app/services/api-http.service';
+import { ApiEndpointsService } from '@app/services/api-endpoints.service';
+import { constants } from 'buffer';
+import { Constants } from '@app/config/constants';
 
 describe('ErrorHandlerInterceptor', () => {
   let errorHandlerInterceptor: ErrorHandlerInterceptor;
@@ -11,7 +17,9 @@ describe('ErrorHandlerInterceptor', () => {
   let httpMock: HttpTestingController;
 
   function createInterceptor() {
-    errorHandlerInterceptor = new ErrorHandlerInterceptor();
+    errorHandlerInterceptor = new ErrorHandlerInterceptor(
+      new AuthService(new UserService(new ApiHttpService(http), new ApiEndpointsService(new Constants())))
+    );
     return errorHandlerInterceptor;
   }
 

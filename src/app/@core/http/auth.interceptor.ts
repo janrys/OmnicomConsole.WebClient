@@ -12,20 +12,25 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(public authService: AuthService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.accessToken = this.authService.token;
-    this.refresh();
+    let isRefresh: boolean = request.url.includes('/refreshToken');
 
-    if (!request.url.includes('/refreshtoken')) {
+    this.accessToken = this.authService.getToken(isRefresh);
+
+    if (!isRefresh) {
+      this.refresh(isRefresh);
+    }
+
+    if (!this.refresh) {
       if (this.authService.refreshTokenInProgress) {
         // If refreshTokenInProgress is true, we will wait until refreshTokenSubject has a non-null value
         // – which means the new token is ready and we can retry the request again
         return this.authService.refreshTokenSubject.pipe(
           filter((result) => result !== null),
           take(1),
-          switchMap(() => next.handle(this.addAuthenticationToken(request)))
+          switchMap(() => next.handle(this.addAuthenticationToken(request, isRefresh)))
         );
       } else {
-        return next.handle(this.addAuthenticationToken(request)).pipe(
+        return next.handle(this.addAuthenticationToken(request, isRefresh)).pipe(
           catchError((error: HttpErrorResponse) => {
             if (error.status === 401) {
               // Maybe logout ??
@@ -41,11 +46,12 @@ export class AuthInterceptor implements HttpInterceptor {
         );
       }
     }
-    if (!this.authService.isAuthorized && !request.url.includes('/refreshtoken')) {
+
+    if (!this.authService.isAuthorized && !isRefresh) {
       console.warn('request was canceld becaouse authorization needed.');
     }
 
-    return next.handle(this.addAuthenticationToken(request)).pipe(
+    return next.handle(this.addAuthenticationToken(request, isRefresh)).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
           // Maybe logout ??
@@ -64,25 +70,25 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-  addAuthenticationToken(request: HttpRequest<any>) {
+  addAuthenticationToken(request: HttpRequest<any>, isRefresh: boolean) {
     // Get access token from Local Storage
 
     // If access token is null this means that user is not logged in
     // And we return the original request
-    if (!this.authService.token) {
+    if (!this.authService.getToken(isRefresh)) {
       return request;
     }
 
     // We clone the request, because the original request is immutable
     return request.clone({
       setHeaders: {
-        Authorization: `Bearer ${this.authService.token}`,
+        Authorization: `Bearer ${this.authService.getToken(isRefresh)}`,
       },
     });
   }
 
-  refresh() {
-    if (this.authService.token == null) {
+  refresh(isRefresh: boolean) {
+    if (this.authService.getToken(isRefresh) == null) {
       return;
     }
 

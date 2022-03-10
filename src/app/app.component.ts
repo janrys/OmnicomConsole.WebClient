@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public matIconRegistry: MatIconRegistry
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     // Setup logger
     if (environment.production) {
       Logger.enableProductionMode();
@@ -64,14 +64,18 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.logIn();
+    await this.logIn();
   }
 
   ngOnDestroy() {
     this.i18nService.destroy();
   }
 
-  logIn() {
+  async logIn() {
+    await this.authService.auth();
+  }
+
+  /* logIn() {
     this.authService.auth().then((data) => {
       // if (data === true) {
       //   this.setData();
@@ -80,5 +84,5 @@ export class AppComponent implements OnInit, OnDestroy {
       //   // this.sharedService.tryAgain.emit(true);
       // }
     });
-  }
+  } */
 }
