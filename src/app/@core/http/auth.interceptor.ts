@@ -62,8 +62,8 @@ export class AuthInterceptor implements HttpInterceptor {
         }
         if (error.status !== 401) {
           console.warn('request was canceld becaouse authorization needed.');
-          this.authService.clearToken();
-          this.authService.logout();
+          /* this.authService.clearToken();
+          this.authService.logout(); */
           return Observable.throw(error);
         }
       })
