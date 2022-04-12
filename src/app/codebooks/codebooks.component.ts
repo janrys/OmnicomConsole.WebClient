@@ -290,10 +290,9 @@ export class CodebooksComponent implements OnInit {
             log.debug('onInsert: ');
           },
           (error) => {
-            this.toastService.showError(
-              'Insert failed',
-              `Insert of record failed with error ${error.message} ${error.error.title}`
-            );
+            let message = error.message;
+            let title = error.error.title;
+            this.toastService.showError('Insert failed', `Insert of record failed with error ${message} ${title}`);
             log.debug('onInsert: ', error);
           }
         );
